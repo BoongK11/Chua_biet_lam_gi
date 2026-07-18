@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
     <style>
-        body {
+body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            /* Thêm ảnh nền vũ trụ chất lượng cao */
+            background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
+            background-size: cover; /* Giúp ảnh phủ kín toàn bộ màn hình */
+            background-position: center; /* Căn giữa ảnh nền */
+            background-attachment: fixed; /* Giữ cố định nền khi cuộn trang */
         }
-        .container {
+.container {
             max-width: 800px;
-            background: white;
+            background: rgba(255, 255, 255, 0.9); /* Đổi từ white sang màu trắng trong suốt 90% */
             padding: 20px;
             margin: 0 auto;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 h1 {
             color: #ff5722; /* Đổi màu cam tại đây nếu muốn */
