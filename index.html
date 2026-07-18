@@ -232,9 +232,9 @@
                 <div class="number-box">10</div>
             </div>
 
-            <!-- ĐÃ THÊM: Khung chứa trình phát nhạc Spotify ẩn ban đầu -->
+            <!-- Khung chứa trình phát nhạc Spotify (ĐÃ CẬP NHẬT: Phát từ mốc 3:01 bằng tham số &time=181) -->
             <div id="spotifyContainer" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.4s ease-out;">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
         </div>
     </div>
@@ -292,14 +292,14 @@
         closeBtn.addEventListener('click', () => {
             playSynthSound(180, 'sine', 0.1); 
             popup.style.display = 'none';
-            spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
+            spotifyCtrl.style.display = 'none'; 
         });
 
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 playSynthSound(180, 'sine', 0.1);
                 popup.style.display = 'none';
-                spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
+                spotifyCtrl.style.display = 'none'; 
             }
         });
 
@@ -308,7 +308,6 @@
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
                 if (box.innerText.trim() === "1") {
-                    // Click vào ô số 1: Phát tiếng bíp cao và bật/tắt khung Spotify
                     playSynthSound(520, 'triangle', 0.15);
                     if (spotifyCtrl.style.display === 'none' || spotifyCtrl.style.display === '') {
                         spotifyCtrl.style.display = 'block';
@@ -316,14 +315,13 @@
                         spotifyCtrl.style.display = 'none';
                     }
                 } else {
-                    // Các ô số khác giữ nguyên âm thanh mặc định
                     playSynthSound(400, 'triangle', 0.12);
                 }
                 console.log("Bạn đã bấm ô số: " + box.innerText);
             });
         });
 
-        console.log("Hệ thống tích hợp trình phát nhạc Spotify cho ô số 1 đã hoàn tất!");
+        console.log("Hệ thống tích hợp trình phát nhạc Spotify phát từ phút 3:01 đã sẵn sàng!");
     </script>
 </body>
 </html>
