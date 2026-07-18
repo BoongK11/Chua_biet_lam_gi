@@ -105,6 +105,38 @@
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
 
+        /* ĐÃ THÊM: CSS NÚT DỪNG NHẠC CỐ ĐỊNH Ở GÓC NGOÀI MÀN HÌNH */
+        .stop-music-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff0055, #ff5722);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
+            cursor: pointer;
+            z-index: 10000; /* Luôn nổi lên trên cùng, kể cả khi mở popup overlay */
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .stop-music-fixed:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.9);
+            background: linear-gradient(45deg, #ff0033, #e64a19);
+        }
+
+        .stop-music-fixed:active {
+            transform: scale(0.95);
+        }
+
         /* CSS CHO KHUNG POPUP HIỆN LÊN */
         .popup-overlay {
             display: none;
@@ -132,7 +164,7 @@
             overflow-y: auto;
         }
 
-        /* ĐÃ THÊM: CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
+        /* CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
         .menu-container {
             display: flex;
             gap: 20px;
@@ -173,7 +205,7 @@
             text-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
 
-        /* ĐÃ THÊM: CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
+        /* CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
         .back-btn {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.4);
@@ -283,12 +315,15 @@
         <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
+    <!-- ĐÃ THÊM: NÚT DỪNG NHẠC NGOÀI GÓC MÀN HÌNH -->
+    <button class="stop-music-fixed" id="globalStopMusicBtn">⏹ Dừng nhạc</button>
+
     <!-- KHUNG POPUP TỔNG -->
     <div class="popup-overlay" id="imagePopup">
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
             
-            <!-- ĐÃ THÊM: MENU LỰA CHỌN BAN ĐẦU -->
+            <!-- MENU LỰA CHỌN BAN ĐẦU -->
             <div id="menuContainer" class="menu-container">
                 <div class="menu-box" id="chooseMusicBtn">
                     <div class="menu-icon">🎵</div>
@@ -300,7 +335,7 @@
                 </div>
             </div>
 
-            <!-- ĐÃ THÊM: PHẦN HIỂN THỊ MUSIC (ẨN BAN ĐẦU) -->
+            <!-- PHẦN HIỂN THỊ MUSIC -->
             <div id="musicSection" style="display: none; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromMusic">⬅ Quay lại</button>
                 
@@ -317,7 +352,7 @@
                     <div class="number-box">10</div>
                 </div>
 
-                <!-- Khung chứa nhạc Spotify cho ô số 1 (Phát từ mốc 3:01) -->
+                <!-- Khung chứa nhạc Spotify cho ô số 1 -->
                 <div id="spotifyContainer1" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
                     <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
@@ -328,7 +363,7 @@
                 </div>
             </div>
 
-            <!-- ĐÃ THÊM: PHẦN HIỂN THỊ MINI GAME TRỐNG (ẨN BAN ĐẦU) -->
+            <!-- PHẦN HIỂN THỊ MINI GAME TRỐNG -->
             <div id="gameSection" style="display: none; padding: 70px 30px 40px 30px; text-align: center; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromGame">⬅ Quay lại</button>
                 <h3 style="color: #ff007f; font-size: 28px; margin: 10px 0; text-shadow: 0 0 10px #ff007f;">Mini Game</h3>
@@ -392,35 +427,24 @@
 
         const spotifyCtrl1 = document.getElementById('spotifyContainer1');
         const spotifyCtrl2 = document.getElementById('spotifyContainer2');
+        const globalStopMusicBtn = document.getElementById('globalStopMusicBtn');
 
-        // Hàm ẩn tất cả nhạc Spotify
-        function hideAllMusic() {
-            spotifyCtrl1.style.display = 'none';
-            spotifyCtrl2.style.display = 'none';
-        }
-
-        // Hàm đặt Popup về trạng thái Menu lựa chọn ban đầu
-        function resetPopupToMenu() {
+        // Bấm nút chính mở Popup (Chỉ chuyển đổi giao diện nhìn thấy, GIỮ NGUYÊN nhạc nền nếu đang chạy)
+        openBtn.addEventListener('click', () => {
+            playSynthSound(250, 'triangle', 0.12); 
             menuContainer.style.display = 'flex';
             musicSection.style.display = 'none';
             gameSection.style.display = 'none';
-            hideAllMusic();
-        }
-
-        // Bấm nút chính mở Popup
-        openBtn.addEventListener('click', () => {
-            playSynthSound(250, 'triangle', 0.12); 
-            resetPopupToMenu();
             popup.style.display = 'flex';
         });
 
-        // Bấm nút đóng X
+        // Bấm nút đóng X (Chỉ ẩn popup overlay, KHÔNG ngắt nhạc đang chạy)
         closeBtn.addEventListener('click', () => {
             playSynthSound(180, 'sine', 0.1); 
             popup.style.display = 'none';
         });
 
-        // Bấm vùng ngoài để đóng Popup
+        // Bấm vùng ngoài để đóng Popup (Chỉ ẩn popup overlay, KHÔNG ngắt nhạc đang chạy)
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 playSynthSound(180, 'sine', 0.1);
@@ -441,15 +465,44 @@
             gameSection.style.display = 'block';
         });
 
-        // XỬ LÝ CÁC NÚT QUAY LẠI MENU CHÍNH
+        // XỬ LÝ CÁC NÚT QUAY LẠI MENU CHÍNH (Đã bỏ lệnh ẩn nhạc để nhạc giữ nguyên trạng thái phát)
         backFromMusic.addEventListener('click', () => {
             playSynthSound(200, 'sine', 0.1);
-            resetPopupToMenu();
+            menuContainer.style.display = 'flex';
+            musicSection.style.display = 'none';
         });
 
         backFromGame.addEventListener('click', () => {
             playSynthSound(200, 'sine', 0.1);
-            resetPopupToMenu();
+            menuContainer.style.display = 'flex';
+            gameSection.style.display = 'none';
+        });
+
+        // ĐÃ THÊM: LOGIC XỬ LÝ NÚT DỪNG NHẠC BÊN NGOÀI TOÀN CỤC
+        globalStopMusicBtn.addEventListener('click', () => {
+            playSynthSound(150, 'sine', 0.2);
+            
+            // Tìm và reload iframe 1 để dừng nhạc triệt để
+            const iframe1 = spotifyCtrl1.querySelector('iframe');
+            if (iframe1) {
+                const src1 = iframe1.src;
+                iframe1.src = '';
+                iframe1.src = src1;
+            }
+            
+            // Tìm và reload iframe 2 để dừng nhạc triệt để
+            const iframe2 = spotifyCtrl2.querySelector('iframe');
+            if (iframe2) {
+                const src2 = iframe2.src;
+                iframe2.src = '';
+                iframe2.src = src2;
+            }
+            
+            // Reset ẩn các khối container nhạc về trạng thái ban đầu
+            spotifyCtrl1.style.display = 'none';
+            spotifyCtrl2.style.display = 'none';
+            
+            console.log("Đã dừng toàn bộ trình phát nhạc Spotify nền!");
         });
 
         // XỬ LÝ SỰ KIỆN CLICK CHO TỪNG Ô SỐ TRONG PHẦN MUSIC
@@ -485,7 +538,7 @@
             });
         });
 
-        console.log("Hệ thống Menu phân loại (Music & Mini Game) đã tích hợp thành công!");
+        console.log("Hệ thống phát nhạc chạy nền song song và nút Dừng nhạc bên ngoài đã hoàn thành!");
     </script>
 </body>
 </html>
