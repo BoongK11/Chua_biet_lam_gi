@@ -107,12 +107,12 @@
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
         
-        <!-- ĐÃ ĐỔI: Tên mới siêu chất của bạn ở đây -->
         <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
         
         <p>Trang Vip Pro Boong đã tạo.</p>
         
-        <a href="https://www.google.com" target="_blank" class="btn">Bấm vào đây</a>
+        <!-- ĐÃ THAY LINK: Trỏ thẳng tới ảnh làng quê độ phân giải cao, không chứa chữ -->
+        <a href="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2560" target="_blank" class="btn">Bấm vào đây</a>
     </div>
 
     <!-- ĐOẠN JAVASCRIPT XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT -->
@@ -125,7 +125,7 @@
             const mouseY = e.clientY - (height / 2);
             
             const moveX = (mouseX / width) * 30; 
-            const moveY = (mouseY / height) * 30;
+            const moveY = (moveY / height) * 30;
             
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
