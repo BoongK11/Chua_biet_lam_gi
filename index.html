@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
-    <!-- Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%225%22/><text y=%2250%22 x=%2250%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Segoe UI, Arial, sans-serif%22 font-weight=%22bold%22 font-size=%2250%22 fill=%22%2300ffcc%22 style=%22text-shadow: 0 0 10px %2300ffcc;%22>9A</text></svg>">
     
+    <!-- Tích hợp Spotify API để điều khiển nhạc thông minh -->
+    <script src="https://open.spotify.com/play-api/v1/widget-api-script"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -26,7 +28,6 @@
             transition: background-position 0.1s ease-out;
         }
 
-        /* Hiệu ứng khung kính Glassmorphism */
         .container {
             max-width: 800px;
             width: 100%;
@@ -41,7 +42,6 @@
             text-align: center;
         }
 
-        /* Hiệu ứng chữ Chao Mung đổi màu Galaxy liên tục */
         h1 {
             background: linear-gradient(45deg, #ff5722, #ff007f, #7000ff, #00c6ff);
             background-size: 300% 300%;
@@ -60,7 +60,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Dòng chữ lớp học phát sáng Neon xanh rực rỡ */
         .lop-hoc {
             color: #00ffcc;
             font-size: 38px;
@@ -77,7 +76,6 @@
             to { transform: scale(1.05); }
         }
 
-        /* Chữ phụ màu trắng phát sáng nhẹ */
         p {
             color: #ffffff;
             font-size: 30px;
@@ -85,7 +83,6 @@
             margin-bottom: 30px;
         }
 
-        /* Nút bấm Neon huyền ảo */
         .btn {
             display: inline-block;
             background: linear-gradient(45deg, #ff5722, #ff007f);
@@ -105,7 +102,7 @@
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
 
-        /* ĐÃ THÊM: CSS NÚT DỪNG NHẠC CỐ ĐỊNH Ở GÓC NGOÀI MÀN HÌNH */
+        /* Nút phát/dừng nhạc - Mặc định màu đỏ */
         .stop-music-fixed {
             position: fixed;
             bottom: 20px;
@@ -119,8 +116,8 @@
             font-size: 15px;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
             cursor: pointer;
-            z-index: 10000; /* Luôn nổi lên trên cùng, kể cả khi mở popup overlay */
-            transition: all 0.2s ease;
+            z-index: 10000;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -128,16 +125,14 @@
         }
 
         .stop-music-fixed:hover {
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 0 25px rgba(255, 0, 85, 0.9);
-            background: linear-gradient(45deg, #ff0033, #e64a19);
+            transform: scale(1.05) translateY(-2px);
+            filter: brightness(1.1);
         }
 
         .stop-music-fixed:active {
             transform: scale(0.95);
         }
 
-        /* CSS CHO KHUNG POPUP HIỆN LÊN */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -164,7 +159,6 @@
             overflow-y: auto;
         }
 
-        /* CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
         .menu-container {
             display: flex;
             gap: 20px;
@@ -205,7 +199,6 @@
             text-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
 
-        /* CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
         .back-btn {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.4);
@@ -228,7 +221,6 @@
             box-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
 
-        /* CSS CHO KHUNG LƯỚI CHỨA CÁC Ô SỐ */
         .number-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -238,7 +230,6 @@
             margin: 0 auto;
         }
 
-        /* CSS CHO TỪNG Ô SỐ NEON */
         .number-box {
             display: flex;
             justify-content: center;
@@ -315,7 +306,7 @@
         <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
-    <!-- ĐÃ THÊM: NÚT DỪNG NHẠC NGOÀI GÓC MÀN HÌNH -->
+    <!-- Nút bấm Đa Năng (Vừa Dừng, Vừa Phát Tiếp) -->
     <button class="stop-music-fixed" id="globalStopMusicBtn">⏹ Dừng nhạc</button>
 
     <!-- KHUNG POPUP TỔNG -->
@@ -323,7 +314,6 @@
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
             
-            <!-- MENU LỰA CHỌN BAN ĐẦU -->
             <div id="menuContainer" class="menu-container">
                 <div class="menu-box" id="chooseMusicBtn">
                     <div class="menu-icon">🎵</div>
@@ -352,18 +342,17 @@
                     <div class="number-box">10</div>
                 </div>
 
-                <!-- Khung chứa nhạc Spotify cho ô số 1 -->
+                <!-- Thay iframe bằng div để API Spotify xử lý -->
                 <div id="spotifyContainer1" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
-                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    <div id="embed-iframe-1"></div>
                 </div>
 
-                <!-- Khung chứa nhạc Spotify cho ô số 2 -->
                 <div id="spotifyContainer2" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
-                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    <div id="embed-iframe-2"></div>
                 </div>
             </div>
 
-            <!-- PHẦN HIỂN THỊ MINI GAME TRỐNG -->
+            <!-- PHẦN HIỂN THỊ MINI GAME -->
             <div id="gameSection" style="display: none; padding: 70px 30px 40px 30px; text-align: center; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromGame">⬅ Quay lại</button>
                 <h3 style="color: #ff007f; font-size: 28px; margin: 10px 0; text-shadow: 0 0 10px #ff007f;">Mini Game</h3>
@@ -374,7 +363,7 @@
     </div>
 
     <script>
-        // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
+        // WEB AUDIO API - Hiệu ứng âm thanh nút bấm
         let audioCtx = null;
         function playSynthSound(frequency, type = 'sine', duration = 0.15) {
             try {
@@ -400,7 +389,7 @@
             }
         }
 
-        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
+        // XỬ LÝ NỀN DI CHUYỂN
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -411,25 +400,87 @@
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
-        // ĐỊNH NGHĨA CÁC PHẦN TỬ DOM GIAO DIỆN
+        // DOM ELEMENTS
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
-        
         const menuContainer = document.getElementById('menuContainer');
         const musicSection = document.getElementById('musicSection');
         const gameSection = document.getElementById('gameSection');
-        
         const chooseMusicBtn = document.getElementById('chooseMusicBtn');
         const chooseGameBtn = document.getElementById('chooseGameBtn');
         const backFromMusic = document.getElementById('backFromMusic');
         const backFromGame = document.getElementById('backFromGame');
-
         const spotifyCtrl1 = document.getElementById('spotifyContainer1');
         const spotifyCtrl2 = document.getElementById('spotifyContainer2');
         const globalStopMusicBtn = document.getElementById('globalStopMusicBtn');
 
-        // Bấm nút chính mở Popup (Chỉ chuyển đổi giao diện nhìn thấy, GIỮ NGUYÊN nhạc nền nếu đang chạy)
+        // ==== KHỞI TẠO SPOTIFY CONTROLLERS ====
+        let spotifyPlayer1 = null;
+        let spotifyPlayer2 = null;
+        let isMusicPaused = false;
+        let lastPlayed = 1; // Ghi nhớ bài nào được phát cuối cùng
+
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            // Khởi tạo bài số 1
+            const element1 = document.getElementById('embed-iframe-1');
+            const options1 = {
+                width: '100%', height: '352',
+                uri: 'spotify:track:331pu1rdL2Yn7Z3F1RNXBR'
+            };
+            IFrameAPI.createController(element1, options1, (EmbedController) => {
+                spotifyPlayer1 = EmbedController;
+                // Nếu bài 1 được phát, đánh dấu bài 1 là bài gần nhất
+                EmbedController.addListener('playback_update', e => {
+                    if (!e.data.isPaused) lastPlayed = 1;
+                });
+            });
+
+            // Khởi tạo bài số 2
+            const element2 = document.getElementById('embed-iframe-2');
+            const options2 = {
+                width: '100%', height: '352',
+                uri: 'spotify:track:07SQzveMFNsEBl8eKLbVIG'
+            };
+            IFrameAPI.createController(element2, options2, (EmbedController) => {
+                spotifyPlayer2 = EmbedController;
+                // Nếu bài 2 được phát, đánh dấu bài 2 là bài gần nhất
+                EmbedController.addListener('playback_update', e => {
+                    if (!e.data.isPaused) lastPlayed = 2;
+                });
+            });
+        };
+
+        // ==== LOGIC NÚT DỪNG / PHÁT TIẾP NGOÀI MÀN HÌNH ====
+        globalStopMusicBtn.addEventListener('click', () => {
+            playSynthSound(150, 'sine', 0.2);
+            
+            if (!isMusicPaused) {
+                // Đang trạng thái phát -> Ra lệnh Tạm dừng cả 2
+                if (spotifyPlayer1) spotifyPlayer1.pause();
+                if (spotifyPlayer2) spotifyPlayer2.pause();
+                
+                // Đổi nút thành "Tiếp tục" với màu Xanh Lá
+                globalStopMusicBtn.innerHTML = '▶ Tiếp tục';
+                globalStopMusicBtn.style.background = 'linear-gradient(45deg, #00b09b, #96c93d)';
+                globalStopMusicBtn.style.boxShadow = '0 0 15px rgba(0, 176, 155, 0.6)';
+                
+                isMusicPaused = true;
+            } else {
+                // Đang trạng thái dừng -> Ra lệnh Phát tiếp đúng bài đang nghe dở
+                if (lastPlayed === 1 && spotifyPlayer1) spotifyPlayer1.play();
+                if (lastPlayed === 2 && spotifyPlayer2) spotifyPlayer2.play();
+                
+                // Trả lại nút "Dừng nhạc" màu Đỏ quen thuộc
+                globalStopMusicBtn.innerHTML = '⏹ Dừng nhạc';
+                globalStopMusicBtn.style.background = 'linear-gradient(45deg, #ff0055, #ff5722)';
+                globalStopMusicBtn.style.boxShadow = '0 0 15px rgba(255, 0, 85, 0.6)';
+                
+                isMusicPaused = false;
+            }
+        });
+
+        // Xử lý Popup
         openBtn.addEventListener('click', () => {
             playSynthSound(250, 'triangle', 0.12); 
             menuContainer.style.display = 'flex';
@@ -438,13 +489,11 @@
             popup.style.display = 'flex';
         });
 
-        // Bấm nút đóng X (Chỉ ẩn popup overlay, KHÔNG ngắt nhạc đang chạy)
         closeBtn.addEventListener('click', () => {
             playSynthSound(180, 'sine', 0.1); 
             popup.style.display = 'none';
         });
 
-        // Bấm vùng ngoài để đóng Popup (Chỉ ẩn popup overlay, KHÔNG ngắt nhạc đang chạy)
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 playSynthSound(180, 'sine', 0.1);
@@ -452,7 +501,6 @@
             }
         });
 
-        // XỬ LÝ CHUYỂN PHẦN TRONG MENU
         chooseMusicBtn.addEventListener('click', () => {
             playSynthSound(350, 'triangle', 0.1);
             menuContainer.style.display = 'none';
@@ -465,7 +513,6 @@
             gameSection.style.display = 'block';
         });
 
-        // XỬ LÝ CÁC NÚT QUAY LẠI MENU CHÍNH (Đã bỏ lệnh ẩn nhạc để nhạc giữ nguyên trạng thái phát)
         backFromMusic.addEventListener('click', () => {
             playSynthSound(200, 'sine', 0.1);
             menuContainer.style.display = 'flex';
@@ -478,34 +525,7 @@
             gameSection.style.display = 'none';
         });
 
-        // ĐÃ THÊM: LOGIC XỬ LÝ NÚT DỪNG NHẠC BÊN NGOÀI TOÀN CỤC
-        globalStopMusicBtn.addEventListener('click', () => {
-            playSynthSound(150, 'sine', 0.2);
-            
-            // Tìm và reload iframe 1 để dừng nhạc triệt để
-            const iframe1 = spotifyCtrl1.querySelector('iframe');
-            if (iframe1) {
-                const src1 = iframe1.src;
-                iframe1.src = '';
-                iframe1.src = src1;
-            }
-            
-            // Tìm và reload iframe 2 để dừng nhạc triệt để
-            const iframe2 = spotifyCtrl2.querySelector('iframe');
-            if (iframe2) {
-                const src2 = iframe2.src;
-                iframe2.src = '';
-                iframe2.src = src2;
-            }
-            
-            // Reset ẩn các khối container nhạc về trạng thái ban đầu
-            spotifyCtrl1.style.display = 'none';
-            spotifyCtrl2.style.display = 'none';
-            
-            console.log("Đã dừng toàn bộ trình phát nhạc Spotify nền!");
-        });
-
-        // XỬ LÝ SỰ KIỆN CLICK CHO TỪNG Ô SỐ TRONG PHẦN MUSIC
+        // CHỌN Ô SỐ BẬT NHẠC
         const numberBoxes = document.querySelectorAll('.number-box');
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
@@ -513,6 +533,7 @@
                 
                 if (selectedNumber === "1") {
                     playSynthSound(520, 'triangle', 0.15);
+                    lastPlayed = 1;
                     spotifyCtrl2.style.display = 'none'; 
                     
                     if (spotifyCtrl1.style.display === 'none' || spotifyCtrl1.style.display === '') {
@@ -523,6 +544,7 @@
                 } 
                 else if (selectedNumber === "2") {
                     playSynthSound(520, 'triangle', 0.15);
+                    lastPlayed = 2;
                     spotifyCtrl1.style.display = 'none'; 
                     
                     if (spotifyCtrl2.style.display === 'none' || spotifyCtrl2.style.display === '') {
@@ -534,11 +556,8 @@
                 else {
                     playSynthSound(400, 'triangle', 0.12);
                 }
-                console.log("Bạn đã bấm ô số: " + selectedNumber);
             });
         });
-
-        console.log("Hệ thống phát nhạc chạy nền song song và nút Dừng nhạc bên ngoài đã hoàn thành!");
     </script>
 </body>
 </html>
