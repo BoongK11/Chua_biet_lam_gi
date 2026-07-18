@@ -10,9 +10,8 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            /* Ảnh nền vũ trụ được cấu hình đặc biệt để chuẩn bị di chuyển */
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
-            background-size: 110% 110%; /* Phóng to nhẹ một chút để khi nền dịch chuyển không bị lộ viền trắng */
+            background-size: 110% 110%;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -21,7 +20,7 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
-            transition: background-position 0.1s ease-out; /* Tạo độ mượt mà khi di chuột */
+            transition: background-position 0.1s ease-out;
         }
 
         /* Hiệu ứng khung kính Glassmorphism */
@@ -95,42 +94,112 @@
             font-size: 18px;
             transition: all 0.3s ease;
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            cursor: pointer;
         }
 
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
+
+        /* CSS CHO KHUNG POPUP ẢNH HIỆN LÊN */
+        .popup-overlay {
+            display: none; /* Mặc định ẩn đi */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85); /* Làm tối nền phía sau */
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .popup-content img {
+            display: block;
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);
+        }
+
+        .close-btn:hover {
+            color: #ff007f;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
-        
         <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
-        
         <p>Trang Vip Pro Boong đã tạo.</p>
-        
-        <!-- ĐÃ THAY LINK: Trỏ thẳng tới ảnh làng quê độ phân giải cao, không chứa chữ -->
-        <a href="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2560" target="_blank" class="btn">Bấm vào đây</a>
+        <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
-    <!-- ĐOẠN JAVASCRIPT XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT -->
+    <!-- KHUNG POPUP CHỨA ẢNH CỦA BẠN -->
+    <div class="popup-overlay" id="imagePopup">
+        <div class="popup-content">
+            <span class="close-btn" id="closePopupBtn">&times;</span>
+            <img src="https://scontent.fhan5-1.fna.fbcdn.net/v/t1.15752-9/702422010_1495756928857788_6667443760561804079_n.jpg?stp=dst-jpg_tt6&cstp=mx593x1280&ctp=s593x1280&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeFRzw5jcLKnQT82PuAVzrWx1BszzOE18RvUGzPM4TXxGwK5qSYYbGvPFzTm9Hfmg8i6OAt7zNHjIA7nFn84azuZ&_nc_ohc=8aVBtlT23-MQ7kNvwF3GhoX&_nc_oc=Ado6OjonGelnphr1r78vM9kgzqTMwy5FWp5MnX_DEyW1fWadrCBtxU0rJtuJvgpcuBY&_nc_zt=23&_nc_ht=scontent.fhan5-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5wFEXfUO8qG6ZHxFNnh8Lqw29nHs0OKPfq75GBPO-HJnhg&oe=6A82C70D" alt="Ảnh của Boong">
+        </div>
+    </div>
+
     <script>
+        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            
             const mouseX = e.clientX - (width / 2);
             const mouseY = e.clientY - (height / 2);
-            
-            const moveX = (mouseX / width) * 30; 
-            const moveY = (moveY / height) * 30;
-            
+            const moveX = (mouseX / width) * 30;
+            const moveY = (mouseY / height) * 30;
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
-        console.log("Trang web vũ trụ tương tác chuột VIP PRO đã sẵn sàng!");
+        // XỬ LÝ ĐÓNG MỞ POPUP ẢNH
+        const popup = document.getElementById('imagePopup');
+        const openBtn = document.getElementById('openPopupBtn');
+        const closeBtn = document.getElementById('closePopupBtn');
+
+        openBtn.addEventListener('click', () => {
+            popup.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        // Bấm ra vùng đen ngoài ảnh cũng sẽ đóng popup
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+
+        console.log("Trang web vũ trụ tích hợp Popup ảnh VIP PRO đã sẵn sàng!");
     </script>
 </body>
 </html>
