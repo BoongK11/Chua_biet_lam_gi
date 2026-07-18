@@ -58,7 +58,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Dòng chữ AE Tồ Tề phát sáng Neon xanh rực rỡ */
+        /* Dòng chữ lớp học phát sáng Neon xanh rực rỡ */
         .lop-hoc {
             color: #00ffcc;
             font-size: 38px;
@@ -107,8 +107,8 @@
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
         
-        <!-- ĐÃ THAY ĐỔI: Tên thương hiệu mới của bạn nằm ở đây -->
-        <div class="lop-hoc">AE Tồ Tề 9A THCS Xuân Thu</div>
+        <!-- ĐÃ ĐỔI: Tên mới siêu chất của bạn ở đây -->
+        <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
         
         <p>Trang Vip Pro Boong đã tạo.</p>
         
@@ -118,19 +118,15 @@
     <!-- ĐOẠN JAVASCRIPT XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT -->
     <script>
         document.addEventListener('mousemove', (e) => {
-            // Lấy kích thước của toàn màn hình hiển thị
             const width = window.innerWidth;
             const height = window.innerHeight;
             
-            // Tính toán vị trí chuột theo tỷ lệ phần centrum từ tâm màn hình
             const mouseX = e.clientX - (width / 2);
             const mouseY = e.clientY - (height / 2);
             
-            // Tỷ lệ dịch chuyển (số càng nhỏ thì dịch chuyển càng nhẹ nhàng, tinh tế)
             const moveX = (mouseX / width) * 30; 
             const moveY = (mouseY / height) * 30;
             
-            // Cập nhật lại vị trí background dựa trên vị trí chuột (đẩy lệch tâm 50%)
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
