@@ -10,15 +10,18 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
+            /* Ảnh nền vũ trụ được cấu hình đặc biệt để chuẩn bị di chuyển */
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
-            background-size: cover;
+            background-size: 110% 110%; /* Phóng to nhẹ một chút để khi nền dịch chuyển không bị lộ viền trắng */
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            transition: background-position 0.1s ease-out; /* Tạo độ mượt mà khi di chuột */
         }
 
         /* Hiệu ứng khung kính Glassmorphism */
@@ -108,12 +111,29 @@
         
         <p>Trang Vip Pro Boong đã tạo.</p>
         
-        <!-- THAY ĐỔI Ở ĐÂY: Thêm link trang web vào href và mở tab mới bằng target="_blank" -->
         <a href="https://www.google.com" target="_blank" class="btn">Bấm vào đây</a>
     </div>
 
+    <!-- ĐOẠN JAVASCRIPT XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT -->
     <script>
-        console.log("Trang web vũ trụ siêu cấp VIP PRO đã tải thành công!");
+        document.addEventListener('mousemove', (e) => {
+            // Lấy kích thước của toàn màn hình hiển thị
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            // Tính toán vị trí chuột theo tỷ lệ phần trăm từ tâm màn hình
+            const mouseX = e.clientX - (width / 2);
+            const mouseY = e.clientY - (height / 2);
+            
+            // Tỷ lệ dịch chuyển (số càng nhỏ thì dịch chuyển càng nhẹ nhàng, tinh tế)
+            const moveX = (mouseX / width) * 30; 
+            const moveY = (mouseY / height) * 30;
+            
+            // Cập nhật lại vị trí background dựa trên vị trí chuột (đẩy lệch tâm 50%)
+            document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
+        });
+
+        console.log("Trang web vũ trụ tương tác chuột VIP PRO đã sẵn sàng!");
     </script>
 </body>
 </html>
