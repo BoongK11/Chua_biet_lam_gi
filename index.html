@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
-    <!-- ĐÃ THÊM: Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
+    <!-- Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%225%22/><text y=%2250%22 x=%2250%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Segoe UI, Arial, sans-serif%22 font-weight=%22bold%22 font-size=%2250%22 fill=%22%2300ffcc%22 style=%22text-shadow: 0 0 10px %2300ffcc;%22>9A</text></svg>">
     
     <style>
@@ -187,7 +187,7 @@
         /* Co giãn mượt mà trên điện thoại màn hình nhỏ */
         @media (max-width: 480px) {
             .number-container {
-                grid-template-columns: repeat(3, 1fr); /* Đổi thành 3 cột nếu màn hình quá nhỏ */
+                grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
                 padding: 45px 20px 20px 20px;
             }
@@ -208,7 +208,7 @@
         <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
-    <!-- KHUNG POPUP ĐÃ THAY ẢNH THÀNH 10 Ô SỐ -->
+    <!-- KHUNG POPUP 10 Ô SỐ -->
     <div class="popup-overlay" id="imagePopup">
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
@@ -229,7 +229,34 @@
     </div>
 
     <script>
-        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
+        // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
+        let audioCtx = null;
+        function playSynthSound(frequency, type = 'sine', duration = 0.15) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); // Độ to âm thanh (0.2 là vừa phải)
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (error) {
+                console.log("Trình duyệt chặn âm thanh: ", error);
+            }
+        }
+
+        // XỬ LÝ NỀN DI CHUYỂF THEO CHUỘT
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -240,26 +267,39 @@
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
-        // XỬ LÝ ĐÓNG MỞ POPUP KHUNG SỐ
+        // XỬ LÝ ĐÓNG MỞ POPUP KHUNG SỐ VÀ ÂM THANH
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
 
         openBtn.addEventListener('click', () => {
+            playSynthSound(250, 'triangle', 0.12); // Âm thanh khi mở popup
             popup.style.display = 'flex';
         });
 
         closeBtn.addEventListener('click', () => {
+            playSynthSound(180, 'sine', 0.1); // Âm thanh khi bấm nút đóng X
             popup.style.display = 'none';
         });
 
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
+                playSynthSound(180, 'sine', 0.1);
                 popup.style.display = 'none';
             }
         });
 
-        console.log("Trang web vũ trụ tích hợp lưới số Neon đã sẵn sàng!");
+        // CÀI ĐẶT ÂM THANH ĐỀU NHAU CHO TẤT CẢ CÁC Ô SỐ
+        const numberBoxes = document.querySelectorAll('.number-box');
+        numberBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                // Đã sửa: Tất cả các ô khi bấm vào đều phát chung tần số 400Hz (Âm thanh click retro rất vui tai)
+                playSynthSound(400, 'triangle', 0.12);
+                console.log("Bạn đã bấm ô số: " + box.innerText);
+            });
+        });
+
+        console.log("Hệ thống âm thanh đồng bộ cho các ô số đã sẵn sàng!");
     </script>
 </body>
 </html>
