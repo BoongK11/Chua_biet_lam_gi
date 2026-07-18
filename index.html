@@ -129,32 +129,15 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
-            overflow-y: auto; /* Cho phép cuộn dọc nếu màn hình điện thoại nhỏ */
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            color: #fff;
-            font-size: 35px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.2s;
-            text-shadow: 0 0 8px rgba(0,0,0,0.8);
-            z-index: 10;
-        }
-
-        .close-btn:hover {
-            color: #ff007f;
+            overflow-y: auto;
         }
 
         /* CSS CHO KHUNG LƯỚI CHỨA CÁC Ô SỐ */
         .number-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 cột đều nhau */
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
-            padding: 50px 30px 25px 30px; /* Chừa khoảng trống bên trên cho nút đóng X */
+            padding: 50px 30px 25px 30px;
             max-width: 450px;
             margin: 0 auto;
         }
@@ -177,20 +160,34 @@
             user-select: none;
         }
 
-        /* Hiệu ứng khi rê chuột vào ô số */
         .number-box:hover {
             transform: scale(1.1) translateY(-3px);
             box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
             background: linear-gradient(45deg, #ff007f, #ff5722);
         }
 
-        /* Hiệu ứng hiện hình mượt mà cho trình phát Spotify */
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            color: #ff007f;
+        }
+
         @keyframes fadeInMusic {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Co giãn mượt mà trên điện thoại màn hình nhỏ */
         @media (max-width: 480px) {
             .number-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -232,9 +229,14 @@
                 <div class="number-box">10</div>
             </div>
 
-            <!-- ĐÃ THÊM: Khung chứa trình phát nhạc Spotify ẩn ban đầu -->
-            <div id="spotifyContainer" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.4s ease-out;">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <!-- Khung chứa nhạc Spotify cho ô số 1 (Phát từ mốc 3:01) -->
+            <div id="spotifyContainer1" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.4s ease-out;">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+
+            <!-- Khung chứa nhạc Spotify cho ô số 2 (BÀI HÁT MỚI THÊM VÀO) -->
+            <div id="spotifyContainer2" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.4s ease-out;">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
         </div>
     </div>
@@ -247,7 +249,6 @@
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
 
@@ -282,7 +283,13 @@
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
-        const spotifyCtrl = document.getElementById('spotifyContainer');
+        const spotifyCtrl1 = document.getElementById('spotifyContainer1');
+        const spotifyCtrl2 = document.getElementById('spotifyContainer2');
+
+        function hideAllMusic() {
+            spotifyCtrl1.style.display = 'none';
+            spotifyCtrl2.style.display = 'none';
+        }
 
         openBtn.addEventListener('click', () => {
             playSynthSound(250, 'triangle', 0.12); 
@@ -292,38 +299,54 @@
         closeBtn.addEventListener('click', () => {
             playSynthSound(180, 'sine', 0.1); 
             popup.style.display = 'none';
-            spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
+            hideAllMusic(); 
         });
 
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 playSynthSound(180, 'sine', 0.1);
                 popup.style.display = 'none';
-                spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
+                hideAllMusic(); 
             }
         });
 
-        // CÀI ĐẶT ÂM THANH VÀ HÀM HIỂN THỊ SPOTIFY
+        // XỬ LÝ SỰ KIỆN CLICK CHO TỪNG Ô SỐ
         const numberBoxes = document.querySelectorAll('.number-box');
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
-                if (box.innerText.trim() === "1") {
-                    // Click vào ô số 1: Phát tiếng bíp cao và bật/tắt khung Spotify
+                const selectedNumber = box.innerText.trim();
+                
+                if (selectedNumber === "1") {
                     playSynthSound(520, 'triangle', 0.15);
-                    if (spotifyCtrl.style.display === 'none' || spotifyCtrl.style.display === '') {
-                        spotifyCtrl.style.display = 'block';
+                    spotifyCtrl2.style.display = 'none'; // Ẩn bài của ô số 2
+                    
+                    // Bật/tắt bài của ô số 1
+                    if (spotifyCtrl1.style.display === 'none' || spotifyCtrl1.style.display === '') {
+                        spotifyCtrl1.style.display = 'block';
                     } else {
-                        spotifyCtrl.style.display = 'none';
+                        spotifyCtrl1.style.display = 'none';
                     }
-                } else {
-                    // Các ô số khác giữ nguyên âm thanh mặc định
+                } 
+                else if (selectedNumber === "2") {
+                    playSynthSound(520, 'triangle', 0.15);
+                    spotifyCtrl1.style.display = 'none'; // Ẩn bài của ô số 1
+                    
+                    // Bật/tắt bài của ô số 2
+                    if (spotifyCtrl2.style.display === 'none' || spotifyCtrl2.style.display === '') {
+                        spotifyCtrl2.style.display = 'block';
+                    } else {
+                        spotifyCtrl2.style.display = 'none';
+                    }
+                } 
+                else {
+                    // Các ô còn lại kêu bíp bíp mặc định
                     playSynthSound(400, 'triangle', 0.12);
                 }
-                console.log("Bạn đã bấm ô số: " + box.innerText);
+                console.log("Bạn đã bấm ô số: " + selectedNumber);
             });
         });
 
-        console.log("Hệ thống tích hợp trình phát nhạc Spotify cho ô số 1 đã hoàn tất!");
+        console.log("Hệ thống đa trình phát Spotify (Ô 1 & Ô 2) đã sẵn sàng!");
     </script>
 </body>
 </html>
