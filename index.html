@@ -5,55 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
     <style>
-body {
-            font-family: Arial, sans-serif;
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            /* Thêm ảnh nền vũ trụ chất lượng cao */
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
-            background-size: cover; /* Giúp ảnh phủ kín toàn bộ màn hình */
-            background-position: center; /* Căn giữa ảnh nền */
-            background-attachment: fixed; /* Giữ cố định nền khi cuộn trang */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Căn giữa toàn bộ nội dung theo chiều dọc màn hình */
+            box-sizing: border-box;
         }
-.container {
+
+        /* Hiệu ứng khung kính Glassmorphism siêu đẹp */
+        .container {
             max-width: 800px;
-            background: rgba(255, 255, 255, 0.9); /* Đổi từ white sang màu trắng trong suốt 90% */
-            padding: 20px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12); /* Trở nên trong suốt hơn */
+            backdrop-filter: blur(10px); /* Làm mờ nền vũ trụ phía sau tạo hiệu ứng mờ kính */
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
             margin: 0 auto;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 16px; /* Bo góc mềm mại hơn */
+            border: 1px solid rgba(255, 255, 255, 0.2.5); /* Viền kính sáng nhẹ */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: center;
         }
-h1 {
-            color: #ff5722; /* Đổi màu cam tại đây nếu muốn */
-            text-align: center; /* Căn giữa dòng chữ */
-            font-size: 65px; /* Thêm dòng này để chữ siêu to khổng lồ */
+
+        /* Hiệu ứng chữ Chao Mung đổi màu Galaxy liên tục */
+        h1 {
+            background: linear-gradient(45deg, #ff5722, #ff007f, #7000ff, #00c6ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: galaxyAnimation 6s ease infinite;
+            font-size: 65px;
+            margin-top: 0;
+            font-weight: 800;
         }
+
+        @keyframes galaxyAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Chữ phụ màu trắng phát sáng nhẹ trên nền tối */
+        p {
+            color: #ffffff;
+            font-size: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            margin-bottom: 30px;
+        }
+
+        /* Nút bấm Neon huyền ảo */
         .btn {
             display: inline-block;
-            background: #007bff;
+            background: linear-gradient(45deg, #ff5722, #ff007f);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 30px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 50px; /* Nút bo tròn hiện đại */
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
         }
+
         .btn:hover {
-            background: #0056b3;
+            transform: translateY(-3px); /* Nút bay nhẹ lên khi di chuột vào */
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.8); /* Phát sáng mạnh hơn */
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Chao Mung Đa Đen!!!</h1>
-        
-        <p style="text-align: center; font-size: 30px;">Trang Vip Pro Boong đã tạo.</p>
-        
+        <p>Trang Vip Pro Boong đã tạo.</p>
         <a href="#" class="btn">Bấm vào đây</a>
     </div>
 
     <script>
-        // Bạn có thể viết code JavaScript ở đây nếu cần
-        console.log("Trang web đã tải thành công!");
+        console.log("Trang web vũ trụ siêu cấp VIP PRO đã tải thành công!");
     </script>
 </body>
+</html>
