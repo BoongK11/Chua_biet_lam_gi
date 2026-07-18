@@ -123,13 +123,13 @@
         .popup-content {
             position: relative;
             max-width: 90%;
-            max-height: 85vh;
+            max-height: 90vh;
             border-radius: 16px;
             box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
-            overflow: hidden;
+            overflow-y: auto; /* Cho phép cuộn dọc nếu màn hình điện thoại nhỏ */
         }
 
         .close-btn {
@@ -154,7 +154,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr); /* 5 cột đều nhau */
             gap: 15px;
-            padding: 50px 30px 30px 30px; /* Chừa khoảng trống bên trên cho nút đóng X */
+            padding: 50px 30px 25px 30px; /* Chừa khoảng trống bên trên cho nút đóng X */
             max-width: 450px;
             margin: 0 auto;
         }
@@ -182,6 +182,12 @@
             transform: scale(1.1) translateY(-3px);
             box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
             background: linear-gradient(45deg, #ff007f, #ff5722);
+        }
+
+        /* Hiệu ứng hiện hình mượt mà cho trình phát Spotify */
+        @keyframes fadeInMusic {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Co giãn mượt mà trên điện thoại màn hình nhỏ */
@@ -225,6 +231,11 @@
                 <div class="number-box">9</div>
                 <div class="number-box">10</div>
             </div>
+
+            <!-- ĐÃ THÊM: Khung chứa trình phát nhạc Spotify ẩn ban đầu -->
+            <div id="spotifyContainer" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.4s ease-out;">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
         </div>
     </div>
 
@@ -243,7 +254,7 @@
                 oscillator.type = type;
                 oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
                 
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); // Độ to âm thanh (0.2 là vừa phải)
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); 
                 gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
 
                 oscillator.connect(gainNode);
@@ -256,7 +267,7 @@
             }
         }
 
-        // XỬ LÝ NỀN DI CHUYỂF THEO CHUỘT
+        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -271,35 +282,48 @@
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
+        const spotifyCtrl = document.getElementById('spotifyContainer');
 
         openBtn.addEventListener('click', () => {
-            playSynthSound(250, 'triangle', 0.12); // Âm thanh khi mở popup
+            playSynthSound(250, 'triangle', 0.12); 
             popup.style.display = 'flex';
         });
 
         closeBtn.addEventListener('click', () => {
-            playSynthSound(180, 'sine', 0.1); // Âm thanh khi bấm nút đóng X
+            playSynthSound(180, 'sine', 0.1); 
             popup.style.display = 'none';
+            spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
         });
 
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 playSynthSound(180, 'sine', 0.1);
                 popup.style.display = 'none';
+                spotifyCtrl.style.display = 'none'; // Ẩn nhạc khi đóng popup
             }
         });
 
-        // CÀI ĐẶT ÂM THANH ĐỀU NHAU CHO TẤT CẢ CÁC Ô SỐ
+        // CÀI ĐẶT ÂM THANH VÀ HÀM HIỂN THỊ SPOTIFY
         const numberBoxes = document.querySelectorAll('.number-box');
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
-                // Đã sửa: Tất cả các ô khi bấm vào đều phát chung tần số 400Hz (Âm thanh click retro rất vui tai)
-                playSynthSound(400, 'triangle', 0.12);
+                if (box.innerText.trim() === "1") {
+                    // Click vào ô số 1: Phát tiếng bíp cao và bật/tắt khung Spotify
+                    playSynthSound(520, 'triangle', 0.15);
+                    if (spotifyCtrl.style.display === 'none' || spotifyCtrl.style.display === '') {
+                        spotifyCtrl.style.display = 'block';
+                    } else {
+                        spotifyCtrl.style.display = 'none';
+                    }
+                } else {
+                    // Các ô số khác giữ nguyên âm thanh mặc định
+                    playSynthSound(400, 'triangle', 0.12);
+                }
                 console.log("Bạn đã bấm ô số: " + box.innerText);
             });
         });
 
-        console.log("Hệ thống âm thanh đồng bộ cho các ô số đã sẵn sàng!");
+        console.log("Hệ thống tích hợp trình phát nhạc Spotify cho ô số 1 đã hoàn tất!");
     </script>
 </body>
 </html>
