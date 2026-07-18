@@ -17,21 +17,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Căn giữa toàn bộ nội dung theo chiều dọc màn hình */
+            min-height: 100vh;
             box-sizing: border-box;
         }
 
-        /* Hiệu ứng khung kính Glassmorphism siêu đẹp */
+        /* Hiệu ứng khung kính Glassmorphism */
         .container {
             max-width: 800px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.12); /* Trở nên trong suốt hơn */
-            backdrop-filter: blur(10px); /* Làm mờ nền vũ trụ phía sau tạo hiệu ứng mờ kính */
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             padding: 40px;
             margin: 0 auto;
-            border-radius: 16px; /* Bo góc mềm mại hơn */
-            border: 1px solid rgba(255, 255, 255, 0.2.5); /* Viền kính sáng nhẹ */
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             text-align: center;
         }
@@ -45,6 +45,7 @@
             animation: galaxyAnimation 6s ease infinite;
             font-size: 65px;
             margin-top: 0;
+            margin-bottom: 10px;
             font-weight: 800;
         }
 
@@ -54,7 +55,24 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Chữ phụ màu trắng phát sáng nhẹ trên nền tối */
+        /* Dòng chữ lớp 9A phát sáng Neon xanh rực rỡ */
+        .lop-hoc {
+            color: #00ffcc;
+            font-size: 38px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 25px 0;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #0011ff;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        /* Chữ phụ màu trắng phát sáng nhẹ */
         p {
             color: #ffffff;
             font-size: 30px;
@@ -69,7 +87,7 @@
             color: white;
             padding: 12px 30px;
             text-decoration: none;
-            border-radius: 50px; /* Nút bo tròn hiện đại */
+            border-radius: 50px;
             font-weight: bold;
             font-size: 18px;
             transition: all 0.3s ease;
@@ -77,14 +95,18 @@
         }
 
         .btn:hover {
-            transform: translateY(-3px); /* Nút bay nhẹ lên khi di chuột vào */
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.8); /* Phát sáng mạnh hơn */
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Chao Mung Đa Đen!!!</h1>
+        <h1>Chao Mung Da Den!!!</h1>
+        
+        <!-- Điểm nhấn lớp học của bạn ở đây -->
+        <div class="lop-hoc">9A THCS Xuân Thu</div>
+        
         <p>Trang Vip Pro Boong đã tạo.</p>
         <a href="#" class="btn">Bấm vào đây</a>
     </div>
