@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
-    
     <!-- ĐÃ THÊM: Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%225%22/><text y=%2250%22 x=%2250%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Segoe UI, Arial, sans-serif%22 font-weight=%22bold%22 font-size=%2250%22 fill=%22%2300ffcc%22 style=%22text-shadow: 0 0 10px %2300ffcc;%22>9A</text></svg>">
-
+    
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -106,7 +105,7 @@
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
 
-        /* CSS CHO KHUNG POPUP ẢNH HIỆN LÊN */
+        /* CSS CHO KHUNG POPUP HIỆN LÊN */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -125,22 +124,17 @@
             position: relative;
             max-width: 90%;
             max-height: 85vh;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
             overflow: hidden;
-        }
-
-        .popup-content img {
-            display: block;
-            max-width: 100%;
-            max-height: 85vh;
-            object-fit: contain;
         }
 
         .close-btn {
             position: absolute;
-            top: 10px;
+            top: 5px;
             right: 15px;
             color: #fff;
             font-size: 35px;
@@ -148,14 +142,65 @@
             cursor: pointer;
             transition: color 0.2s;
             text-shadow: 0 0 8px rgba(0,0,0,0.8);
+            z-index: 10;
         }
 
         .close-btn:hover {
             color: #ff007f;
         }
+
+        /* CSS CHO KHUNG LƯỚI CHỨA CÁC Ô SỐ */
+        .number-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 cột đều nhau */
+            gap: 15px;
+            padding: 50px 30px 30px 30px; /* Chừa khoảng trống bên trên cho nút đóng X */
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        /* CSS CHO TỪNG Ô SỐ NEON */
+        .number-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00ffcc, #0011ff);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Hiệu ứng khi rê chuột vào ô số */
+        .number-box:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
+            background: linear-gradient(45deg, #ff007f, #ff5722);
+        }
+
+        /* Co giãn mượt mà trên điện thoại màn hình nhỏ */
+        @media (max-width: 480px) {
+            .number-container {
+                grid-template-columns: repeat(3, 1fr); /* Đổi thành 3 cột nếu màn hình quá nhỏ */
+                gap: 10px;
+                padding: 45px 20px 20px 20px;
+            }
+            .number-box {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
         <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
@@ -163,11 +208,23 @@
         <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
-    <!-- KHUNG POPUP CHỨA ẢNH CỦA BẠN -->
+    <!-- KHUNG POPUP ĐÃ THAY ẢNH THÀNH 10 Ô SỐ -->
     <div class="popup-overlay" id="imagePopup">
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
-            <img src="https://scontent.fhan5-1.fna.fbcdn.net/v/t1.15752-9/702422010_1495756928857788_6667443760561804079_n.jpg?stp=dst-jpg_tt6&cstp=mx593x1280&ctp=s593x1280&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeFRzw5jcLKnQT82PuAVzrWx1BszzOE18RvUGzPM4TXxGwK5qSYYbGvPFzTm9Hfmg8i6OAt7zNHjIA7nFn84azuZ&_nc_ohc=8aVBtlT23-MQ7kNvwF3GhoX&_nc_oc=Ado6OjonGelnphr1r78vM9kgzqTMwy5FWp5MnX_DEyW1fWadrCBtxU0rJtuJvgpcuBY&_nc_zt=23&_nc_ht=scontent.fhan5-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5wFEXfUO8qG6ZHxFNnh8Lqw29nHs0OKPfq75GBPO-HJnhg&oe=6A82C70D" alt="Ảnh của Boong">
+            
+            <div class="number-container">
+                <div class="number-box">1</div>
+                <div class="number-box">2</div>
+                <div class="number-box">3</div>
+                <div class="number-box">4</div>
+                <div class="number-box">5</div>
+                <div class="number-box">6</div>
+                <div class="number-box">7</div>
+                <div class="number-box">8</div>
+                <div class="number-box">9</div>
+                <div class="number-box">10</div>
+            </div>
         </div>
     </div>
 
@@ -183,7 +240,7 @@
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
-        // XỬ LÝ ĐÓNG MỞ POPUP ẢNH
+        // XỬ LÝ ĐÓNG MỞ POPUP KHUNG SỐ
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
@@ -202,7 +259,7 @@
             }
         });
 
-        console.log("Trang web vũ trụ tích hợp Popup ảnh VIP PRO đã sẵn sàng!");
+        console.log("Trang web vũ trụ tích hợp lưới số Neon đã sẵn sàng!");
     </script>
 </body>
 </html>
