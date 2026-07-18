@@ -104,13 +104,13 @@
 
         /* CSS CHO KHUNG POPUP ẢNH HIỆN LÊN */
         .popup-overlay {
-            display: none; /* Mặc định ẩn đi */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Làm tối nền phía sau */
+            background: rgba(0, 0, 0, 0.85);
             z-index: 9999;
             justify-content: center;
             align-items: center;
@@ -155,7 +155,10 @@
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
         <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
-        <p>Trang Vip Pro Boong đã tạo.</p>
+        
+        <!-- ĐÃ ĐỔI: Dòng chữ phụ mới của bạn nằm ở đây -->
+        <p>Đại Hội Võ Tuất</p>
+        
         <a class="btn" id="openPopupBtn">Bấm vào đây</a>
     </div>
 
@@ -192,7 +195,6 @@
             popup.style.display = 'none';
         });
 
-        // Bấm ra vùng đen ngoài ảnh cũng sẽ đóng popup
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 popup.style.display = 'none';
