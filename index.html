@@ -321,54 +321,65 @@
             style.innerHTML = `
                 .sao-bang {
                     position: absolute;
-                    background: linear-gradient(-45deg, #00ffcc, rgba(0, 0, 0, 0));
+                    background: linear-gradient(-45deg, #00f0ff, rgba(0, 0, 0, 0));
                     border-radius: 999px;
                     animation: bay-xuong linear infinite;
                     opacity: 0;
                 }
                 @keyframes bay-xuong {
-                    0% { transform: translate(0, 0) rotate(-45deg); opacity: 0; min-width: 0; }
-                    12% { opacity: 1; min-width: 90px; }
-                    60% { opacity: 1; }
-                    100% { transform: translate(-700px, 700px) rotate(-45deg); opacity: 0; min-width: 0; }
+                    0% { transform: translate(0, 0) rotate(-45deg); opacity: 0; width: 0; }
+                    8% { opacity: 1; width: var(--w); }
+                    85% { opacity: 1; }
+                    100% { transform: translate(-1800px, 1800px) rotate(-45deg); opacity: 0; width: 0; }
                 }
             `;
             document.head.appendChild(style);
 
-            const soLuongSao = 6;
+            // Set chuẩn cấu hình: Cứ mỗi 5 giây có 20 sao băng rơi ngẫu nhiên liên tục
+            const soLuongSao = 20;
             for (let i = 0; i < soLuongSao; i++) {
                 const star = document.createElement('div');
                 star.classList.add('sao-bang');
                 resetStarProperties(star);
-                star.style.animationDelay = `${Math.random() * 9}s`;
+                
+                // Trải đều thời gian xuất phát của 20 sao trong vòng 5 giây đầu tiên
+                star.style.animationDelay = `${Math.random() * 5}s`;
 
+                // Khi chạy hết một chu kỳ, reset lại thuộc tính và thêm nhịp delay ngẫu nhiên mới
                 star.addEventListener('animationiteration', () => {
                     resetStarProperties(star);
+                    star.style.animationDelay = `${Math.random() * 2}s`;
                 });
                 starContainer.appendChild(star);
             }
 
             function resetStarProperties(star) {
-                const startX = 65 + Math.random() * 55; 
-                const startY = -10 - Math.random() * 20; 
+                // Tọa độ xuất phát ngẫu nhiên ở góc trên bên phải màn hình
+                const startX = 40 + Math.random() * 80; 
+                const startY = -20 - Math.random() * 20; 
                 star.style.left = `${startX}%`;
                 star.style.top = `${startY}%`;
                 
-                const duration = 2.5 + Math.random() * 3.5; 
+                // Tốc độ bay nhanh và lướt lẹ
+                const duration = 1.5 + Math.random() * 1.5; 
                 star.style.animationDuration = `${duration}s`;
-                star.style.animationDelay = '0s';
                 
-                const thickness = 1 + Math.random() * 2; 
+                // ĐỘ DÀI: Cực dài trên 300px (dao động từ 300px đến 500px)
+                const length = 300 + Math.random() * 200; 
+                star.style.setProperty('--w', `${length}px`);
+                
+                // Độ dày vệt sáng
+                const thickness = 2 + Math.random() * 1.5; 
                 star.style.height = `${thickness}px`;
                 
-                const colors = ['#00ffcc', '#ff007f', '#00c6ff', '#7000ff'];
-                const selectedColor = colors[Math.floor(Math.random() * colors.length)];
-                star.style.background = `linear-gradient(-45deg, ${selectedColor}, rgba(0, 0, 0, 0))`;
-                star.style.filter = `drop-shadow(0 0 6px ${selectedColor})`;
+                // MÀU SẮC: Xanh phát sáng bầu trời đêm (Neon Cyan kết hợp Glow Shadow kép)
+                const blueNeon = '#00f0ff';
+                star.style.background = `linear-gradient(-45deg, ${blueNeon}, rgba(0, 0, 0, 0))`;
+                star.style.filter = `drop-shadow(0 0 10px ${blueNeon}) drop-shadow(0 0 20px #0077ff)`;
             }
         }
         
-        // Khởi chạy sao băng khi trang web tải xong
+        // Khởi chạy hệ thống sao băng
         initShootingStars();
 
         // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
@@ -530,7 +541,7 @@
             });
         });
 
-        console.log("Hệ thống Vũ trụ Sao băng & Playlist dynamic đã hoàn tất!");
+        console.log("Mưa sao băng Blue Neon siêu dài đã kích hoạt thành công!");
     </script>
 </body>
 </html>
