@@ -24,6 +24,7 @@
             min-height: 100vh;
             box-sizing: border-box;
             transition: background-position 0.1s ease-out;
+            overflow-x: hidden;
         }
         /* Hiệu ứng khung kính Glassmorphism */
         .container {
@@ -38,6 +39,8 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             text-align: center;
+            position: relative;
+            z-index: 5;
         }
         /* Hiệu ứng chữ Chao Mung đổi màu Galaxy liên tục */
         h1 {
@@ -301,6 +304,73 @@
     </div>
 
     <script>
+        // HÀM TỰ ĐỘNG TẠO HIỆU ỨNG SAO BĂNG DI CHUYỂN
+        function initShootingStars() {
+            const starContainer = document.createElement('div');
+            starContainer.style.position = 'fixed';
+            starContainer.style.top = '0';
+            starContainer.style.left = '0';
+            starContainer.style.width = '100%';
+            starContainer.style.height = '100%';
+            starContainer.style.zIndex = '1';
+            starContainer.style.pointerEvents = 'none';
+            starContainer.style.overflow = 'hidden';
+            document.body.appendChild(starContainer);
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .sao-bang {
+                    position: absolute;
+                    background: linear-gradient(-45deg, #00ffcc, rgba(0, 0, 0, 0));
+                    border-radius: 999px;
+                    animation: bay-xuong linear infinite;
+                    opacity: 0;
+                }
+                @keyframes bay-xuong {
+                    0% { transform: translate(0, 0) rotate(-45deg); opacity: 0; min-width: 0; }
+                    12% { opacity: 1; min-width: 90px; }
+                    60% { opacity: 1; }
+                    100% { transform: translate(-700px, 700px) rotate(-45deg); opacity: 0; min-width: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            const soLuongSao = 6;
+            for (let i = 0; i < soLuongSao; i++) {
+                const star = document.createElement('div');
+                star.classList.add('sao-bang');
+                resetStarProperties(star);
+                star.style.animationDelay = `${Math.random() * 9}s`;
+
+                star.addEventListener('animationiteration', () => {
+                    resetStarProperties(star);
+                });
+                starContainer.appendChild(star);
+            }
+
+            function resetStarProperties(star) {
+                const startX = 65 + Math.random() * 55; 
+                const startY = -10 - Math.random() * 20; 
+                star.style.left = `${startX}%`;
+                star.style.top = `${startY}%`;
+                
+                const duration = 2.5 + Math.random() * 3.5; 
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = '0s';
+                
+                const thickness = 1 + Math.random() * 2; 
+                star.style.height = `${thickness}px`;
+                
+                const colors = ['#00ffcc', '#ff007f', '#00c6ff', '#7000ff'];
+                const selectedColor = colors[Math.floor(Math.random() * colors.length)];
+                star.style.background = `linear-gradient(-45deg, ${selectedColor}, rgba(0, 0, 0, 0))`;
+                star.style.filter = `drop-shadow(0 0 6px ${selectedColor})`;
+            }
+        }
+        
+        // Khởi chạy sao băng khi trang web tải xong
+        initShootingStars();
+
         // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
         let audioCtx = null;
         function playSynthSound(frequency, type = 'sine', duration = 0.15) {
@@ -339,10 +409,8 @@
         // XỬ LÝ NỀN DI CHUYỂN KHI NGHIÊNG ĐIỆN THOẠI (MOBILE CẢM BIẾN)
         window.addEventListener('deviceorientation', (e) => {
             if (e.gamma !== null && e.beta !== null) {
-                // e.gamma: độ nghiêng trái/phải (-90 đến 90)
-                // e.beta: độ nghiêng trước/sau (-180 đến 180)
                 const moveX = (e.gamma / 45) * 15; 
-                const moveY = ((e.beta - 45) / 45) * 15; // Trừ bớt 45 độ theo góc cầm máy tự nhiên
+                const moveY = ((e.beta - 45) / 45) * 15; 
                 document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
             }
         });
@@ -462,7 +530,7 @@
             });
         });
 
-        console.log("Hệ thống Giao diện nâng cấp (Dynamic Music & Gyro Mobile) đã sẵn sàng!");
+        console.log("Hệ thống Vũ trụ Sao băng & Playlist dynamic đã hoàn tất!");
     </script>
 </body>
 </html>
