@@ -14,7 +14,7 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #0b0c10; /* Màu nền dự phòng */
+            background-color: #0b0c10;
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
             background-size: 110% 110%;
             background-position: center;
@@ -215,7 +215,6 @@
             box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
             background: linear-gradient(45deg, #ff007f, #ff5722);
         }
-        /* Trạng thái ô số được chọn active */
         .number-box.active {
             background: linear-gradient(45deg, #ff007f, #ff5722);
             box-shadow: 0 0 20px #ff007f;
@@ -275,7 +274,7 @@
                 </div>
             </div>
 
-            <!-- PHẦN HIỂN THỊ MUSIC (TỐI ƯU DYNAMIC) -->
+            <!-- PHẦN HIỂN THỊ MUSIC -->
             <div id="musicSection" style="display: none; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromMusic">⬅ Quay lại</button>
                 <div class="number-container">
@@ -291,18 +290,16 @@
                     <div class="number-box">10</div>
                 </div>
                 
-                <!-- Một Khung Chứa Nhạc Duy Nhất Dùng Chung -->
                 <div id="spotifyWrapper" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
                     <iframe id="spotifyPlayer" style="border-radius:12px" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
             </div>
 
-            <!-- PHẦN HIỂN THỊ MINI GAME: CỜ VUA 2 THIẾT BỊ P2P -->
+            <!-- PHẦN HIỂN THỊ MINI GAME: CỜ VUA LUẬT CHUẨN P2P -->
             <div id="gameSection" style="display: none; padding: 60px 20px 30px 20px; text-align: center; max-width: 480px; margin: 0 auto; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromGame">⬅ Quay lại</button>
                 <h3 style="color: #ff007f; font-size: 26px; margin: 5px 0 15px 0; text-shadow: 0 0 10px #ff007f;">Cờ Vua Đối Kháng</h3>
                 
-                <!-- Giao diện kết nối ban đầu -->
                 <div id="chessConnectMenu" style="margin-top: 15px;">
                     <button class="btn" id="btnCreateRoom" style="background: linear-gradient(45deg, #00ffcc, #0011ff); font-size: 15px; padding: 10px 15px; width: 85%; margin-bottom: 12px;">Tạo Phòng (Quân Trắng)</button>
                     <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin: 5px 0;">- HOẶC -</div>
@@ -310,7 +307,6 @@
                     <button class="btn" id="btnJoinRoom" style="font-size: 15px; padding: 10px 15px; width: 85%;">Vào Phòng (Quân Đen)</button>
                 </div>
 
-                <!-- Giao diện trạng thái chờ -->
                 <div id="chessWaitingScreen" style="display: none; margin-top: 15px; color: #fff;">
                     <p style="font-size: 16px; margin-bottom: 10px;" id="waitingStatus">Đang kết nối trạm vũ trụ...</p>
                     <div id="shareCodeArea" style="display: none; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px dashed #00ffcc;">
@@ -318,18 +314,17 @@
                     </div>
                 </div>
 
-                <!-- Giao diện chiến trường Bàn Cờ -->
                 <div id="chessGameArea" style="display: none; margin-top: 10px;">
                     <div id="gameInfoStatus" style="color: #fff; font-size: 16px; margin-bottom: 12px; font-weight: bold;">Chờ kết nối...</div>
                     <div id="chessBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; aspect-ratio: 1; border: 3px solid rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(0,255,204,0.2); border-radius: 8px; overflow: hidden; background-color: rgba(0,0,0,0.4);"></div>
-                    <div style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 8px;">Mẹo: Chế độ tự do hành quân, chạm quân của mình rồi chạm ô đến để di chuyển!</div>
+                    <div style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 8px;">Luật chuẩn: Chạm quân của bạn, các ô đi hợp lệ sẽ sáng viền để bạn di chuyển!</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // HÀM TỰ ĐỘNG TẠO HIỆU ỨNG SAO BĂNG DI CHUYỂN DYNAMIC
+        // HÀM TỰ ĐỘNG TẠO HIỆU ỨNG SAO BĂNG
         function initShootingStars() {
             const starContainer = document.createElement('div');
             starContainer.style.position = 'fixed';
@@ -377,9 +372,7 @@
                 star.style.background = `linear-gradient(-45deg, ${blueNeon}, rgba(0, 0, 0, 0))`;
                 star.style.filter = `drop-shadow(0 0 10px ${blueNeon}) drop-shadow(0 0 20px #0077ff)`;
 
-                star.addEventListener('animationend', () => {
-                    star.remove();
-                });
+                star.addEventListener('animationend', () => { star.remove(); });
                 starContainer.appendChild(star);
             }
 
@@ -396,7 +389,7 @@
         }
         initShootingStars();
 
-        // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
+        // HIỆU ỨNG ÂM THANH SYNTH
         let audioCtx = null;
         function playSynthSound(frequency, type = 'sine', duration = 0.15) {
             try {
@@ -420,7 +413,7 @@
             }
         }
 
-        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
+        // NỀN DI CHUYỂN THEO CHUỘT
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -431,7 +424,7 @@
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
         });
 
-        // ĐỊNH NGHĨA CÁC PHẦN TỬ DOM GIAO DIỆN
+        // ĐỊNH NGHĨA CÁC BIẾN UI
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
@@ -445,7 +438,6 @@
         const spotifyWrapper = document.getElementById('spotifyWrapper');
         const spotifyPlayer = document.getElementById('spotifyPlayer');
 
-        // DANH SÁCH BÀI HÁT PLAYLIST
         const classPlaylist = {
             "1": "https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181",
             "2": "https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821",
@@ -493,7 +485,6 @@
             musicSection.style.display = 'block';
         });
 
-        // SỰ KIỆN CLICK MỞ MINI GAME
         chooseGameBtn.addEventListener('click', () => {
             playSynthSound(350, 'triangle', 0.1);
             menuContainer.style.display = 'none';
@@ -529,14 +520,13 @@
                     } else {
                         spotifyWrapper.style.display = 'none';
                         spotifyPlayer.src = "";
-                        playSynthSound(300, 'sine', 0.1);
                     }
                 }
             });
         });
 
         // ==========================================
-        // KHU VỰC THUẬT TOÁN ENGINE CỜ VUA P2P ONLINE
+        // KHU VỰC THUẬT TOÁN LUẬT CỜ VUA CHUẨN QUỐC TẾ
         // ==========================================
         let peer = null;
         let conn = null;
@@ -553,19 +543,114 @@
             for (let r = 0; r < 8; r++) {
                 let row = [];
                 for (let c = 0; c < 8; c++) {
-                    if (r === 0) row.push({ type: initialRowPieces[c], color: 'B' });
-                    else if (r === 1) row.push({ type: 'P', color: 'B' });
-                    else if (r === 6) row.push({ type: 'P', color: 'W' });
-                    else if (r === 7) row.push({ type: initialRowPieces[c], color: 'W' });
+                    if (r === 0) row.push({ type: initialRowPieces[c], color: 'B', hasMoved: false });
+                    else if (r === 1) row.push({ type: 'P', color: 'B', hasMoved: false });
+                    else if (r === 6) row.push({ type: 'P', color: 'W', hasMoved: false });
+                    else if (r === 7) row.push({ type: initialRowPieces[c], color: 'W', hasMoved: false });
                     else row.push(null);
                 }
                 boardState.push(row);
             }
         }
 
+        // HÀM KIỂM TRA ĐƯỜNG ĐI TRỐNG (Dành cho Xe, Tượng, Hậu)
+        function isPathClear(fromR, fromC, toR, toC) {
+            const deltaR = Math.sign(toR - fromR);
+            const deltaC = Math.sign(toC - fromC);
+            let currR = fromR + deltaR;
+            let currC = fromC + deltaC;
+
+            while (currR !== toR || currC !== toC) {
+                if (boardState[currR][currC] !== null) {
+                    return false; // Bị vướng quân cờ trên đường đi
+                }
+                currR += deltaR;
+                currC += deltaC;
+            }
+            return true;
+        }
+
+        // THUẬT TOÁN KIỂM TRA NƯỚC ĐI HỢP LỆ THEO TỪNG QUÂN
+        function isValidMove(fromR, fromC, toR, toC) {
+            const piece = boardState[fromR][fromC];
+            const target = boardState[toR][toC];
+
+            // 1. Không thể đi vào ô có quân cùng màu
+            if (target && target.color === piece.color) return false;
+
+            const diffR = Math.abs(toR - fromR);
+            const diffC = Math.abs(toC - fromC);
+
+            switch (piece.type) {
+                case 'K': // VUA: Đi 1 ô duy nhất về mọi hướng
+                    return diffR <= 1 && diffC <= 1;
+
+                case 'Q': // HẬU: Kết hợp Xe + Tượng không giới hạn ô
+                    if ((fromR === toR || fromC === toC) || (diffR === diffC)) {
+                        return isPathClear(fromR, fromC, toR, toC);
+                    }
+                    return false;
+
+                case 'R': // XE: Đi thẳng dọc/ngang không giới hạn ô
+                    if (fromR === toR || fromC === toC) {
+                        return isPathClear(fromR, fromC, toR, toC);
+                    }
+                    return false;
+
+                case 'B': // TƯỢNG: Đi chéo không giới hạn ô
+                    if (diffR === diffC) {
+                        return isPathClear(fromR, fromC, toR, toC);
+                    }
+                    return false;
+
+                case 'N': // MÃ: Hình chữ L (2-1 hoặc 1-2) và được phép nhảy qua đầu quân khác
+                    return (diffR === 2 && diffC === 1) || (diffR === 1 && diffC === 2);
+
+                case 'P': // TỐT: Đi thẳng 1 ô (nước đầu đi 2), ăn chéo 1 ô trước
+                    const direction = piece.color === 'W' ? -1 : 1; // Quân trắng đi lên (-R), quân đen đi xuống (+R)
+                    
+                    // Đi thẳng 1 ô
+                    if (fromC === toC && toR === fromR + direction && !target) {
+                        return true;
+                    }
+                    // Đi thẳng 2 ô ở nước đi đầu tiên
+                    if (fromC === toC && !piece.hasMoved && toR === fromR + 2 * direction) {
+                        // Kiểm tra không có quân cờ nào cản ở cả ô giữa và ô đích
+                        if (!boardState[fromR + direction][fromC] && !target) {
+                            return true;
+                        }
+                    }
+                    // Ăn chéo 1 ô
+                    if (diffC === 1 && toR === fromR + direction && target && target.color !== piece.color) {
+                        return true;
+                    }
+                    return false;
+            }
+            return false;
+        }
+
+        // TÌM TẤT CẢ CÁC Ô ĐI HỢP LỆ CỦA QUÂN CỜ ĐANG CHỌN ĐỂ HIỂN THỊ HƯỚNG DẪN
+        function getValidMovesForPiece(r, c) {
+            let validMoves = [];
+            for (let targetR = 0; targetR < 8; targetR++) {
+                for (let targetC = 0; targetC < 8; targetC++) {
+                    if (isValidMove(r, c, targetR, targetC)) {
+                        validMoves.push({ r: targetR, c: targetC });
+                    }
+                }
+            }
+            return validMoves;
+        }
+
         function renderChessBoard() {
             const boardEl = document.getElementById('chessBoard');
             boardEl.innerHTML = '';
+
+            // Lấy danh sách các ô gợi ý hợp lệ nếu có quân đang được chọn
+            let highlightedSquares = [];
+            if (selectedSquare) {
+                highlightedSquares = getValidMovesForPiece(selectedSquare.r, selectedSquare.c);
+            }
 
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
@@ -581,8 +666,15 @@
                     const isDarkCell = (r + c) % 2 === 1;
                     square.style.backgroundColor = isDarkCell ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.07)';
 
+                    // Đổ màu viền hồng cho ô đang chọn
                     if (selectedSquare && selectedSquare.r === r && selectedSquare.c === c) {
                         square.style.boxShadow = 'inset 0 0 12px #ff007f';
+                    }
+
+                    // Đổ màu viền xanh neon gợi ý cho các ô di chuyển hợp lệ
+                    const isHint = highlightedSquares.some(m => m.r === r && m.c === c);
+                    if (isHint) {
+                        square.style.boxShadow = 'inset 0 0 10px #00ffcc';
                     }
 
                     const piece = boardState[r][c];
@@ -597,7 +689,7 @@
                         }
                     }
 
-                    square.addEventListener('click', () => handleSquareClick(r, c));
+                    square.addEventListener('click', () => handleSquareClick(r, c, isHint));
                     boardEl.appendChild(square);
                 }
             }
@@ -609,33 +701,56 @@
             infoStatus.innerHTML = `<span style="color:#fff">${roleText}</span> — <span style="color:${turnColor}; text-shadow: 0 0 5px ${turnColor};">${turnText}</span>`;
         }
 
-        function handleSquareClick(r, c) {
+        function handleSquareClick(r, c, isHint) {
             if (!conn) return; 
             if (currentTurn !== myRole) return; 
 
             const piece = boardState[r][c];
 
             if (selectedSquare) {
+                // Nếu ấn lại đúng ô cũ thì hủy chọn
                 if (selectedSquare.r === r && selectedSquare.c === c) {
                     selectedSquare = null;
                     renderChessBoard();
                     return;
                 }
 
-                const movingPiece = boardState[selectedSquare.r][selectedSquare.c];
-                boardState[r][c] = movingPiece;
-                boardState[selectedSquare.r][selectedSquare.c] = null;
+                // Thực hiện di chuyển nếu ô nhắm tới nằm trong danh sách gợi ý hợp lệ (isHint)
+                if (isHint) {
+                    const movingPiece = boardState[selectedSquare.r][selectedSquare.c];
+                    
+                    // Đánh dấu quân cờ này đã từng di chuyển (Phục vụ tính luật Tốt đi 2 ô nước đầu)
+                    movingPiece.hasMoved = true;
 
-                conn.send({
-                    type: 'MOVE',
-                    board: boardState
-                });
+                    // Tiến hành ăn quân/di chuyển dữ liệu
+                    boardState[r][c] = movingPiece;
+                    boardState[selectedSquare.r][selectedSquare.c] = null;
 
-                selectedSquare = null;
-                currentTurn = myRole === 'W' ? 'B' : 'W'; 
-                playSynthSound(400, 'triangle', 0.1);
-                renderChessBoard();
+                    // Gửi trạng thái bàn cờ đồng bộ sang cho đối thủ P2P
+                    conn.send({
+                        type: 'MOVE',
+                        board: boardState
+                    });
+
+                    selectedSquare = null;
+                    currentTurn = myRole === 'W' ? 'B' : 'W'; 
+                    playSynthSound(400, 'triangle', 0.1);
+                    renderChessBoard();
+                } else {
+                    // Nếu ấn vào một ô không hợp lệ khác: 
+                    // Thay vì di chuyển bừa, hệ thống sẽ kiểm tra xem ô đó có phải quân mình không để đổi lựa chọn quân cờ
+                    if (piece && piece.color === myRole) {
+                        selectedSquare = { r, c };
+                        playSynthSound(580, 'sine', 0.08);
+                        renderChessBoard();
+                    } else {
+                        // Ấn vào đất trống hoặc quân địch không hợp lệ thì hủy chọn quân cũ
+                        selectedSquare = null;
+                        renderChessBoard();
+                    }
+                }
             } else {
+                // Nếu chưa chọn quân, tiến hành chọn quân cờ của phe mình
                 if (piece && piece.color === myRole) {
                     selectedSquare = { r, c };
                     playSynthSound(580, 'sine', 0.08);
@@ -697,13 +812,11 @@
             if (peer) { peer.destroy(); peer = null; }
         }
 
-        // CLICK: NÚT TẠO PHÒNG (QUÂN TRẮNG)
+        // SỰ KIỆN NÚT TẠO PHÒNG
         document.getElementById('btnCreateRoom').addEventListener('click', () => {
             playSynthSound(300, 'triangle', 0.1);
-            
-            // BẪY LỖI: Kiểm tra xem thư viện đã được tải thành công chưa
             if (typeof Peer === 'undefined') {
-                alert("Lỗi mạng: Trình duyệt không tải được thư viện PeerJS! Bạn thử tắt trình chặn quảng cáo (Adblock) rồi F5 chạy lại web nhé.");
+                alert("Lỗi mạng: Trình duyệt không tải được thư viện PeerJS! Hãy tắt trình chặn quảng cáo rồi F5 chạy lại web nhé.");
                 return;
             }
 
@@ -717,10 +830,9 @@
                 peer = new Peer(roomID);
                 setupPeerEvents();
                 
-                // Cơ chế hủy treo sau 10 giây nếu máy chủ công cộng quá tải
                 const timeoutCheck = setTimeout(() => {
                     if (!peer || !peer.id) {
-                        document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn hoặc chặn kết nối P2P. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lần nữa nha!</span>';
+                        document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lần nữa nha!</span>';
                     }
                 }, 10000);
 
@@ -735,14 +847,13 @@
             }
         });
 
-        // CLICK: NÚT VÀO PHÒNG (QUÂN ĐEN)
+        // SỰ KIỆN NÚT VÀO PHÒNG
         document.getElementById('btnJoinRoom').addEventListener('click', () => {
             const code = document.getElementById('roomCodeInput').value.trim();
             if (!code) {
                 alert("Bạn ơi, hãy nhập mã phòng do bạn mình gửi trước nhé!");
                 return;
             }
-            
             if (typeof Peer === 'undefined') {
                 alert("Lỗi mạng: Không tìm thấy thư viện kết nối cờ. Hãy kiểm tra lại mạng hoặc tắt Adblock nhé!");
                 return;
@@ -761,7 +872,6 @@
                 peer.on('open', () => {
                     conn = peer.connect(code); 
 
-                    // Cơ chế bảo vệ chống treo máy khi kết nối trạm
                     const connTimeout = setTimeout(() => {
                         if (!conn || !conn.open) {
                             alert("Không thể kết nối! Vui lòng kiểm tra lại mã phòng hoặc bảo bạn mình giữ nguyên màn hình chờ nhé.");
@@ -788,7 +898,7 @@
             }
         });
 
-        console.log("Hệ thống Mưa sao băng 180s & Cờ Vua P2P chống treo UI đã đi vào hoạt động ổn định!");
+        console.log("Hệ thống Mini Game cờ vua luật quốc tế chuẩn chỉnh chống treo UI hoạt động ổn định!");
     </script>
 </body>
 </html>
