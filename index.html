@@ -304,7 +304,7 @@
     </div>
 
     <script>
-        // HÀM TỰ ĐỘNG TẠO HIỆU ỨNG SAO BĂNG DI CHUYỂN
+        // HÀM TỰ ĐỘNG TẠO HIỆU ỨNG SAO BĂNG DI CHUYỂN DYNAMIC
         function initShootingStars() {
             const starContainer = document.createElement('div');
             starContainer.style.position = 'fixed';
@@ -323,6 +323,7 @@
                     position: absolute;
                     background: linear-gradient(-45deg, #00f0ff, rgba(0, 0, 0, 0));
                     border-radius: 999px;
+                    animation: bay-xuong linear forwards;
                     opacity: 0;
                 }
                 @keyframes bay-xuong {
@@ -334,59 +335,62 @@
             `;
             document.head.appendChild(style);
 
-            function resetStarProperties(star) {
+            // Hàm tạo ra duy nhất một ngôi sao băng xanh cực dài và phát sáng
+            function spawnSingleStar() {
+                const star = document.createElement('div');
+                star.classList.add('sao-bang');
+                
+                // Tọa độ xuất phát ngẫu nhiên ở góc trên bên phải
                 const startX = 40 + Math.random() * 80; 
                 const startY = -20 - Math.random() * 20; 
                 star.style.left = `${startX}%`;
                 star.style.top = `${startY}%`;
                 
-                // ĐỘ DÀI: Cực dài trên 300px (dao động 300px - 500px)
+                // Tốc độ lướt lẹ qua màn hình (1.5s -> 3s)
+                const duration = 1.5 + Math.random() * 1.5; 
+                star.style.animationDuration = `${duration}s`;
+                
+                // ĐỘ DÀI: Cực dài trên 300px (dao động mượt từ 300px đến 500px)
                 const length = 300 + Math.random() * 200; 
                 star.style.setProperty('--w', `${length}px`);
                 
+                // Độ dày vệt sáng siêu mảnh tinh tế
                 const thickness = 2 + Math.random() * 1.5; 
                 star.style.height = `${thickness}px`;
                 
-                // MÀU SẮC: Xanh phát sáng bầu trời đêm (Neon Cyan + Double Glow Shadow)
+                // MÀU SẮC: Chỉ màu xanh bầu trời phát sáng (Neon Cyan + Glow Shadow kép)
                 const blueNeon = '#00f0ff';
                 star.style.background = `linear-gradient(-45deg, ${blueNeon}, rgba(0, 0, 0, 0))`;
                 star.style.filter = `drop-shadow(0 0 10px ${blueNeon}) drop-shadow(0 0 20px #0077ff)`;
-            }
 
-            // Hàm kích hoạt một ngôi sao độc lập
-            function spawnSingleStar() {
-                const star = document.createElement('div');
-                star.classList.add('sao-bang');
+                // Sao bay xong sẽ tự xóa khỏi web để mượt máy hoàn toàn
+                star.addEventListener('animationend', () => {
+                    star.remove();
+                });
+
                 starContainer.appendChild(star);
+            }
 
-                function launch() {
-                    resetStarProperties(star);
-                    // Reset animation bằng cách ép duyệt lại DOM
-                    star.style.animation = 'none';
-                    star.offsetHeight; 
-                    
-                    const duration = 1.5 + Math.random() * 1.5; 
-                    star.style.animation = `bay-xuong ${duration}s linear forwards`;
-
-                    // Khi sao bay hết hành trình, cho nó nghỉ ngẫu nhiên TRONG VÒNG 60 GIÂY rồi mới bay tiếp
-                    star.addEventListener('animationend', function handler() {
-                        star.removeEventListener('animationend', handler);
-                        setTimeout(launch, Math.random() * 60000); // 60 giây dãn cách ngẫu nhiên
-                    });
+            // Hàm kích hoạt làn sóng sao băng theo yêu cầu
+            function triggerWave() {
+                const soLuongSao = 20;
+                const chuKyGiay = 180; // Cấu hình 180 giây chuẩn chỉnh
+                
+                for (let i = 0; i < soLuongSao; i++) {
+                    // Trải đều ngẫu nhiên 20 ngôi sao trong khoảng thời gian 180 giây (trừ hao 5s cuối) để không bị dồn cục
+                    const randomDelayMs = Math.random() * (chuKyGiay - 5) * 1000;
+                    setTimeout(spawnSingleStar, randomDelayMs);
                 }
-
-                // Lần đầu tải trang: Rải đều lịch xuất phát của 20 sao trong vòng 60 giây đầu
-                setTimeout(launch, Math.random() * 60000);
             }
 
-            // Sinh đúng cấu hình 20 ngôi sao hoạt động độc lập
-            const soLuongSao = 20;
-            for (let i = 0; i < soLuongSao; i++) {
-                spawnSingleStar();
-            }
+            // Kích hoạt ngay làn sóng đầu tiên khi tải trang
+            triggerWave();
+            
+            // Cứ đều đặn mỗi 180 giây (3 phút) sẽ lặp lại một wave 20 sao ngẫu nhiên mới cực chill
+            setInterval(triggerWave, 180000);
         }
         
-        // Khởi chạy hệ thống sao băng
+        // Khởi chạy hệ thống mưa sao băng nghệ thuật
         initShootingStars();
 
         // HÀM TỰ TẠO ÂM THANH SỬ DỤNG WEB AUDIO API
@@ -512,7 +516,6 @@
             resetPopupToMenu();
         });
 
-        // XỬ LÝ CÁC NÚT QUAY LẠI MENU CHÍNH
         backFromGame.addEventListener('click', () => {
             playSynthSound(200, 'sine', 0.1);
             resetPopupToMenu();
@@ -549,7 +552,7 @@
             });
         });
 
-        console.log("Hệ thống sao băng thư giãn dãn cách 60 giây đã sẵn sàng!");
+        console.log("Hệ thống Chu kỳ Mưa sao băng 180s lãng mạn đã đi vào hoạt động!");
     </script>
 </body>
 </html>
