@@ -6,13 +6,13 @@
     <title>Trang Web Của Tôi</title>
     <!-- Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%225%22/><text y=%2250%22 x=%2250%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Segoe UI, Arial, sans-serif%22 font-weight=%22bold%22 font-size=%2250%22 fill=%22%2300ffcc%22 style=%22text-shadow: 0 0 10px %2300ffcc;%22>9A</text></svg>">
-    
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
+            background-color: #0b0c10; /* Màu nền dự phòng */
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2070');
             background-size: 110% 110%;
             background-position: center;
@@ -25,7 +25,6 @@
             box-sizing: border-box;
             transition: background-position 0.1s ease-out;
         }
-
         /* Hiệu ứng khung kính Glassmorphism */
         .container {
             max-width: 800px;
@@ -40,7 +39,6 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             text-align: center;
         }
-
         /* Hiệu ứng chữ Chao Mung đổi màu Galaxy liên tục */
         h1 {
             background: linear-gradient(45deg, #ff5722, #ff007f, #7000ff, #00c6ff);
@@ -53,13 +51,11 @@
             margin-bottom: 10px;
             font-weight: 800;
         }
-
         @keyframes galaxyAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         /* Dòng chữ lớp học phát sáng Neon xanh rực rỡ */
         .lop-hoc {
             color: #00ffcc;
@@ -71,12 +67,10 @@
             text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #0011ff;
             animation: pulse 2s ease-in-out infinite alternate;
         }
-
         @keyframes pulse {
             from { transform: scale(1); }
             to { transform: scale(1.05); }
         }
-
         /* Chữ phụ màu trắng phát sáng nhẹ */
         p {
             color: #ffffff;
@@ -84,7 +78,6 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             margin-bottom: 30px;
         }
-
         /* Nút bấm Neon huyền ảo */
         .btn {
             display: inline-block;
@@ -99,12 +92,10 @@
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
             cursor: pointer;
         }
-
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
         }
-
         /* CSS CHO KHUNG POPUP HIỆN LÊN */
         .popup-overlay {
             display: none;
@@ -119,7 +110,6 @@
             align-items: center;
             backdrop-filter: blur(5px);
         }
-
         .popup-content {
             position: relative;
             max-width: 90%;
@@ -131,8 +121,7 @@
             backdrop-filter: blur(15px);
             overflow-y: auto;
         }
-
-        /* ĐÃ THÊM: CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
+        /* CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
         .menu-container {
             display: flex;
             gap: 20px;
@@ -141,7 +130,6 @@
             max-width: 480px;
             margin: 0 auto;
         }
-
         .menu-box {
             flex: 1;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
@@ -154,26 +142,22 @@
             text-align: center;
             user-select: none;
         }
-
         .menu-box:hover {
             transform: scale(1.05) translateY(-5px);
             border-color: #ff007f;
             box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
         }
-
         .menu-icon {
             font-size: 45px;
             margin-bottom: 10px;
         }
-
         .menu-text {
             color: #fff;
             font-size: 20px;
             font-weight: bold;
             text-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
-
-        /* ĐÃ THÊM: CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
+        /* CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
         .back-btn {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.4);
@@ -189,13 +173,11 @@
             transition: all 0.2s;
             z-index: 11;
         }
-
         .back-btn:hover {
             background: rgba(255,255,255,0.2);
             border-color: #fff;
             box-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
-
         /* CSS CHO KHUNG LƯỚI CHỨA CÁC Ô SỐ */
         .number-container {
             display: grid;
@@ -205,7 +187,6 @@
             max-width: 450px;
             margin: 0 auto;
         }
-
         /* CSS CHO TỪNG Ô SỐ NEON */
         .number-box {
             display: flex;
@@ -223,13 +204,16 @@
             cursor: pointer;
             user-select: none;
         }
-
         .number-box:hover {
             transform: scale(1.1) translateY(-3px);
             box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
             background: linear-gradient(45deg, #ff007f, #ff5722);
         }
-
+        /* Trạng thái ô số được chọn active */
+        .number-box.active {
+            background: linear-gradient(45deg, #ff007f, #ff5722);
+            box-shadow: 0 0 20px #ff007f;
+        }
         .close-btn {
             position: absolute;
             top: 5px;
@@ -242,40 +226,25 @@
             text-shadow: 0 0 8px rgba(0,0,0,0.8);
             z-index: 10;
         }
-
         .close-btn:hover {
             color: #ff007f;
         }
-
         @keyframes fadeInMusic {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @media (max-width: 480px) {
-            .menu-container {
-                flex-direction: column;
-                gap: 15px;
-                padding: 60px 30px 30px 30px;
-            }
-            .menu-box {
-                padding: 20px;
-            }
-            .number-container {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-                padding: 60px 20px 20px 20px;
-            }
-            .number-box {
-                width: 55px;
-                height: 55px;
-                font-size: 22px;
-            }
+            .menu-container { flex-direction: column; gap: 15px; padding: 60px 30px 30px 30px; }
+            .menu-box { padding: 20px; }
+            .number-container { grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 60px 20px 20px 20px; }
+            .number-box { width: 55px; height: 55px; font-size: 22px; }
+            h1 { font-size: 45px; }
+            .lop-hoc { font-size: 24px; }
+            p { font-size: 20px; }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>Chao Mung Da Den!!!</h1>
         <div class="lop-hoc">AE Tồ Tề 9AB10 - K55 THCS Xuân Thu</div>
@@ -287,8 +256,8 @@
     <div class="popup-overlay" id="imagePopup">
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
-            
-            <!-- ĐÃ THÊM: MENU LỰA CHỌN BAN ĐẦU -->
+
+            <!-- MENU LỰA CHỌN BAN ĐẦU -->
             <div id="menuContainer" class="menu-container">
                 <div class="menu-box" id="chooseMusicBtn">
                     <div class="menu-icon">🎵</div>
@@ -300,10 +269,9 @@
                 </div>
             </div>
 
-            <!-- ĐÃ THÊM: PHẦN HIỂN THỊ MUSIC (ẨN BAN ĐẦU) -->
+            <!-- PHẦN HIỂN THỊ MUSIC (TỐI ƯU DYNAMIC) -->
             <div id="musicSection" style="display: none; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromMusic">⬅ Quay lại</button>
-                
                 <div class="number-container">
                     <div class="number-box">1</div>
                     <div class="number-box">2</div>
@@ -316,25 +284,19 @@
                     <div class="number-box">9</div>
                     <div class="number-box">10</div>
                 </div>
-
-                <!-- Khung chứa nhạc Spotify cho ô số 1 (Phát từ mốc 3:01) -->
-                <div id="spotifyContainer1" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
-                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                </div>
-
-                <!-- Khung chứa nhạc Spotify cho ô số 2 -->
-                <div id="spotifyContainer2" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
-                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                
+                <!-- Một Khung Chứa Nhạc Duy Nhất Dùng Chung -->
+                <div id="spotifyWrapper" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
+                    <iframe id="spotifyPlayer" style="border-radius:12px" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
             </div>
 
-            <!-- ĐÃ THÊM: PHẦN HIỂN THỊ MINI GAME TRỐNG (ẨN BAN ĐẦU) -->
+            <!-- PHẦN HIỂN THỊ MINI GAME: ĐÃ ĐỂ TRỐNG TRẠNG THÁI "COMING SOON" -->
             <div id="gameSection" style="display: none; padding: 70px 30px 40px 30px; text-align: center; max-width: 450px; margin: 0 auto; animation: fadeInMusic 0.3s ease-out;">
                 <button class="back-btn" id="backFromGame">⬅ Quay lại</button>
                 <h3 style="color: #ff007f; font-size: 28px; margin: 10px 0; text-shadow: 0 0 10px #ff007f;">Mini Game</h3>
                 <p style="color: #fff; font-size: 18px; text-shadow: none; margin-top: 15px;">Tính năng đang được phát triển, quay lại sau nhé! 😉</p>
             </div>
-
         </div>
     </div>
 
@@ -348,16 +310,14 @@
                 }
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
-
+                
                 oscillator.type = type;
                 oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-
+                
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
-
                 oscillator.start();
                 oscillator.stop(audioCtx.currentTime + duration);
             } catch (error) {
@@ -380,43 +340,52 @@
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
-        
         const menuContainer = document.getElementById('menuContainer');
         const musicSection = document.getElementById('musicSection');
         const gameSection = document.getElementById('gameSection');
-        
         const chooseMusicBtn = document.getElementById('chooseMusicBtn');
         const chooseGameBtn = document.getElementById('chooseGameBtn');
         const backFromMusic = document.getElementById('backFromMusic');
         const backFromGame = document.getElementById('backFromGame');
+        
+        const spotifyWrapper = document.getElementById('spotifyWrapper');
+        const spotifyPlayer = document.getElementById('spotifyPlayer');
 
-        const spotifyCtrl1 = document.getElementById('spotifyContainer1');
-        const spotifyCtrl2 = document.getElementById('spotifyContainer2');
-
-        // Hàm ẩn tất cả nhạc Spotify
-        function hideAllMusic() {
-            spotifyCtrl1.style.display = 'none';
-            spotifyCtrl2.style.display = 'none';
-        }
+        // DANH SÁCH BÀI HÁT PLAYLIST (Tự động map theo ô số từ 1 - 10)
+        // Bạn có thể tùy ý thay đổi các link Spotify embed dưới đây
+        const classPlaylist = {
+            "1": "https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181",
+            "2": "https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821",
+            "3": "https://open.spotify.com/embed/track/7ouMYWpwJ422jRcDASZB7P",
+            "4": "https://open.spotify.com/embed/track/4PTG3Z6ehGkBF2zI7YkR5C",
+            "5": "https://open.spotify.com/embed/track/60S2vJv3nZ5j6Sg8N2z3sl",
+            "6": "https://open.spotify.com/embed/track/1xsYJ8XGjGB1zl18zT4JAz",
+            "7": "https://open.spotify.com/embed/track/5QO79kh1nOghj2pI0X4n6C",
+            "8": "https://open.spotify.com/embed/track/0VjIjW4GlUZAMYd2v2ZcTI",
+            "9": "https://open.spotify.com/embed/track/2t8yEwVjZjyq754fhJjAGn",
+            "10": "https://open.spotify.com/embed/track/4iJyoZe61jG55T954j75Jg"
+        };
 
         // Hàm đặt Popup về trạng thái Menu lựa chọn ban đầu
         function resetPopupToMenu() {
             menuContainer.style.display = 'flex';
             musicSection.style.display = 'none';
             gameSection.style.display = 'none';
-            hideAllMusic();
+            spotifyWrapper.style.display = 'none';
+            spotifyPlayer.src = "";
+            document.querySelectorAll('.number-box').forEach(b => b.classList.remove('active'));
         }
 
         // Bấm nút chính mở Popup
         openBtn.addEventListener('click', () => {
-            playSynthSound(250, 'triangle', 0.12); 
+            playSynthSound(250, 'triangle', 0.12);
             resetPopupToMenu();
             popup.style.display = 'flex';
         });
 
         // Bấm nút đóng X
         closeBtn.addEventListener('click', () => {
-            playSynthSound(180, 'sine', 0.1); 
+            playSynthSound(180, 'sine', 0.1);
             popup.style.display = 'none';
         });
 
@@ -452,40 +421,39 @@
             resetPopupToMenu();
         });
 
-        // XỬ LÝ SỰ KIỆN CLICK CHO TỪNG Ô SỐ TRONG PHẦN MUSIC
+        // XỬ LÝ SỰ KIỆN DYNAMIC CLICK CHO CÁC Ô SỐ PHẦN MUSIC
         const numberBoxes = document.querySelectorAll('.number-box');
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
                 const selectedNumber = box.innerText.trim();
-                
-                if (selectedNumber === "1") {
-                    playSynthSound(520, 'triangle', 0.15);
-                    spotifyCtrl2.style.display = 'none'; 
+                playSynthSound(520, 'triangle', 0.15);
+
+                // Nếu ô này đang active sẵn rồi -> click lại sẽ ẩn nhạc đi
+                if(box.classList.contains('active')) {
+                    box.classList.remove('active');
+                    spotifyWrapper.style.display = 'none';
+                    spotifyPlayer.src = "";
+                } else {
+                    // Xóa trạng thái active của các ô cũ
+                    numberBoxes.forEach(b => b.classList.remove('active'));
+                    box.classList.add('active');
                     
-                    if (spotifyCtrl1.style.display === 'none' || spotifyCtrl1.style.display === '') {
-                        spotifyCtrl1.style.display = 'block';
+                    // Lấy link bài hát tương ứng trong Object và gán dynamic
+                    if(classPlaylist[selectedNumber]) {
+                        spotifyPlayer.src = classPlaylist[selectedNumber];
+                        spotifyWrapper.style.display = 'block';
                     } else {
-                        spotifyCtrl1.style.display = 'none';
+                        // Nếu số không có nhạc định nghĩa (ví dụ >10)
+                        spotifyWrapper.style.display = 'none';
+                        spotifyPlayer.src = "";
+                        playSynthSound(300, 'sine', 0.1); // Tiếng báo lỗi nhẹ
                     }
-                } 
-                else if (selectedNumber === "2") {
-                    playSynthSound(520, 'triangle', 0.15);
-                    spotifyCtrl1.style.display = 'none'; 
-                    
-                    if (spotifyCtrl2.style.display === 'none' || spotifyCtrl2.style.display === '') {
-                        spotifyCtrl2.style.display = 'block';
-                    } else {
-                        spotifyCtrl2.style.display = 'none';
-                    }
-                } 
-                else {
-                    playSynthSound(400, 'triangle', 0.12);
                 }
                 console.log("Bạn đã bấm ô số: " + selectedNumber);
             });
         });
 
-        console.log("Hệ thống Menu phân loại (Music & Mini Game) đã tích hợp thành công!");
+        console.log("Hệ thống Giao diện nâng cấp (Dynamic Music) đã sẵn sàng, phần Game để trống!");
     </script>
 </body>
 </html>
