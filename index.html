@@ -321,7 +321,6 @@
                 <!-- Giao diện chiến trường Bàn Cờ -->
                 <div id="chessGameArea" style="display: none; margin-top: 10px;">
                     <div id="gameInfoStatus" style="color: #fff; font-size: 16px; margin-bottom: 12px; font-weight: bold;">Chờ kết nối...</div>
-                    <!-- Ma trận bàn cờ 8x8 phát sáng -->
                     <div id="chessBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; aspect-ratio: 1; border: 3px solid rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(0,255,204,0.2); border-radius: 8px; overflow: hidden; background-color: rgba(0,0,0,0.4);"></div>
                     <div style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 8px;">Mẹo: Chế độ tự do hành quân, chạm quân của mình rồi chạm ô đến để di chuyển!</div>
                 </div>
@@ -393,7 +392,7 @@
                 }
             }
             triggerWave();
-            setInterval(triggerWave, 180000); // 180 giây chuẩn chill
+            setInterval(triggerWave, 180000);
         }
         initShootingStars();
 
@@ -460,7 +459,6 @@
             "10": "https://open.spotify.com/embed/track/4iJyoZe61jG55T954j75Jg"
         };
 
-        // Hàm đặt Popup về trạng thái ban đầu
         function resetPopupToMenu() {
             menuContainer.style.display = 'flex';
             musicSection.style.display = 'none';
@@ -468,7 +466,7 @@
             spotifyWrapper.style.display = 'none';
             spotifyPlayer.src = "";
             document.querySelectorAll('.number-box').forEach(b => b.classList.remove('active'));
-            leaveChessRoom(); // Đóng kết nối cờ nếu đang mở
+            leaveChessRoom();
         }
 
         openBtn.addEventListener('click', () => {
@@ -495,6 +493,7 @@
             musicSection.style.display = 'block';
         });
 
+        // SỰ KIỆN CLICK MỞ MINI GAME
         chooseGameBtn.addEventListener('click', () => {
             playSynthSound(350, 'triangle', 0.1);
             menuContainer.style.display = 'none';
@@ -511,7 +510,6 @@
             resetPopupToMenu();
         });
 
-        // XỬ LÝ CHỌN NHẠC DYNAMIC
         const numberBoxes = document.querySelectorAll('.number-box');
         numberBoxes.forEach(box => {
             box.addEventListener('click', () => {
@@ -542,15 +540,14 @@
         // ==========================================
         let peer = null;
         let conn = null;
-        let myRole = '';       // 'W' hoặc 'B'
-        let currentTurn = 'W';  // 'W' luôn đi trước
-        let boardState = [];    // Ma trận lưu quân cờ
-        let selectedSquare = null; // Lưu vị trí ô đang bấm chọn
+        let myRole = '';       
+        let currentTurn = 'W';  
+        let boardState = [];    
+        let selectedSquare = null; 
 
         const pieceSymbols = { 'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞', 'P': '♟' };
         const initialRowPieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
 
-        // Khởi tạo trạng thái quân cờ lúc đầu
         function initChessBoardData() {
             boardState = [];
             for (let r = 0; r < 8; r++) {
@@ -566,7 +563,6 @@
             }
         }
 
-        // Vẽ bàn cờ lên giao diện HTML dạng Neon matrix
         function renderChessBoard() {
             const boardEl = document.getElementById('chessBoard');
             boardEl.innerHTML = '';
@@ -582,11 +578,9 @@
                     square.style.userSelect = 'none';
                     square.style.aspectRatio = '1';
 
-                    // Tạo màu ô ca-rô phong cách nền tối
                     const isDarkCell = (r + c) % 2 === 1;
                     square.style.backgroundColor = isDarkCell ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.07)';
 
-                    // Tạo viền quét sáng nếu ô này đang được bấm chọn
                     if (selectedSquare && selectedSquare.r === r && selectedSquare.c === c) {
                         square.style.boxShadow = 'inset 0 0 12px #ff007f';
                     }
@@ -594,12 +588,11 @@
                     const piece = boardState[r][c];
                     if (piece) {
                         square.innerText = pieceSymbols[piece.type];
-                        // Phối màu Neon cực đỉnh tương phản
                         if (piece.color === 'W') {
-                            square.style.color = '#00ffcc'; // Quân Trắng ánh Cyan
+                            square.style.color = '#00ffcc'; 
                             square.style.textShadow = '0 0 8px #00ffcc';
                         } else {
-                            square.style.color = '#ff007f'; // Quân Đen ánh Hồng Neon
+                            square.style.color = '#ff007f'; 
                             square.style.textShadow = '0 0 8px #ff007f';
                         }
                     }
@@ -609,7 +602,6 @@
                 }
             }
 
-            // Đồng bộ thanh trạng thái hiển thị lượt đi
             const infoStatus = document.getElementById('gameInfoStatus');
             const roleText = myRole === 'W' ? 'Bên TRẮNG (Bạn)' : 'Bên ĐEN (Bạn)';
             const turnText = currentTurn === myRole ? 'LƯỢT CỦA BẠN' : 'ĐỐI THỦ ĐANG NGHĨ...';
@@ -617,38 +609,33 @@
             infoStatus.innerHTML = `<span style="color:#fff">${roleText}</span> — <span style="color:${turnColor}; text-shadow: 0 0 5px ${turnColor};">${turnText}</span>`;
         }
 
-        // Xử lý khi người chơi bấm chọn ô trên bàn cờ
         function handleSquareClick(r, c) {
             if (!conn) return; 
-            if (currentTurn !== myRole) return; // Không phải lượt của mình thì khóa bấm
+            if (currentTurn !== myRole) return; 
 
             const piece = boardState[r][c];
 
             if (selectedSquare) {
-                // Nếu bấm lại vào đúng ô cũ -> hủy chọn quân
                 if (selectedSquare.r === r && selectedSquare.c === c) {
                     selectedSquare = null;
                     renderChessBoard();
                     return;
                 }
 
-                // Thực hiện di chuyển hành quân tự do (Sandbox mode)
                 const movingPiece = boardState[selectedSquare.r][selectedSquare.c];
                 boardState[r][c] = movingPiece;
                 boardState[selectedSquare.r][selectedSquare.c] = null;
 
-                // Đồng bộ dữ liệu bàn cờ vừa đi thẳng sang thiết bị đối thủ lập tức
                 conn.send({
                     type: 'MOVE',
                     board: boardState
                 });
 
                 selectedSquare = null;
-                currentTurn = myRole === 'W' ? 'B' : 'W'; // Đổi lượt đi
+                currentTurn = myRole === 'W' ? 'B' : 'W'; 
                 playSynthSound(400, 'triangle', 0.1);
                 renderChessBoard();
             } else {
-                // Chọn quân cờ (chỉ được phép chọn quân thuộc màu phe mình)
                 if (piece && piece.color === myRole) {
                     selectedSquare = { r, c };
                     playSynthSound(580, 'sine', 0.08);
@@ -657,18 +644,16 @@
             }
         }
 
-        // Cài đặt lắng nghe các sự kiện nhận data từ mạng ngang hàng P2P
         function setupPeerEvents() {
             peer.on('error', (err) => {
                 console.error(err);
-                alert("Lỗi mạng vũ trụ P2P: " + err.type);
-                resetChessUI();
+                document.getElementById('waitingStatus').innerHTML = `<span style="color:#ff007f; font-size:14px;">Lỗi kết nối P2P (${err.type}). Hãy tắt Adblock hoặc F5 tải lại trang nhé!</span>`;
+                setTimeout(resetChessUI, 4000);
             });
 
-            // Chủ phòng đón người chơi thứ 2 vào phòng
             peer.on('connection', (connection) => {
                 if (conn) {
-                    connection.close(); // Phòng đầy
+                    connection.close(); 
                     return;
                 }
                 conn = connection;
@@ -684,12 +669,11 @@
             });
         }
 
-        // Nhận gói dữ liệu di chuyển từ thiết bị đối thủ truyền sang
         function setupConnectionDataChannel() {
             conn.on('data', (data) => {
                 if (data.type === 'MOVE') {
                     boardState = data.board;
-                    currentTurn = myRole; // Trả lại lượt đi cho mình
+                    currentTurn = myRole; 
                     playSynthSound(480, 'triangle', 0.12);
                     renderChessBoard();
                 }
@@ -713,58 +697,98 @@
             if (peer) { peer.destroy(); peer = null; }
         }
 
-        // CLICK: Nút Tạo phòng (Chủ phòng - Quân Trắng)
+        // CLICK: NÚT TẠO PHÒNG (QUÂN TRẮNG)
         document.getElementById('btnCreateRoom').addEventListener('click', () => {
             playSynthSound(300, 'triangle', 0.1);
+            
+            // BẪY LỖI: Kiểm tra xem thư viện đã được tải thành công chưa
+            if (typeof Peer === 'undefined') {
+                alert("Lỗi mạng: Trình duyệt không tải được thư viện PeerJS! Bạn thử tắt trình chặn quảng cáo (Adblock) rồi F5 chạy lại web nhé.");
+                return;
+            }
+
             document.getElementById('chessConnectMenu').style.display = 'none';
             document.getElementById('chessWaitingScreen').style.display = 'block';
-            document.getElementById('waitingStatus').innerText = 'Đang lấy mã phòng từ không gian...';
+            document.getElementById('waitingStatus').innerText = 'Đang đăng ký mã phòng với hệ thống vũ trụ...';
 
-            // Tạo mã phòng ngẫu nhiên ngắn gọn dễ gửi qua Zalo/Mess
             const roomID = '9A-' + Math.floor(1000 + Math.random() * 9000);
 
-            peer = new Peer(roomID);
-            peer.on('open', (id) => {
-                document.getElementById('waitingStatus').innerText = 'Phòng đã tạo! Hãy gửi mã này cho bạn cùng chơi:';
-                document.getElementById('shareCodeArea').style.display = 'block';
-                document.getElementById('generatedRoomCode').innerText = id;
+            try {
+                peer = new Peer(roomID);
                 setupPeerEvents();
-            });
+                
+                // Cơ chế hủy treo sau 10 giây nếu máy chủ công cộng quá tải
+                const timeoutCheck = setTimeout(() => {
+                    if (!peer || !peer.id) {
+                        document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn hoặc chặn kết nối P2P. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lần nữa nha!</span>';
+                    }
+                }, 10000);
+
+                peer.on('open', (id) => {
+                    clearTimeout(timeoutCheck);
+                    document.getElementById('waitingStatus').innerText = 'Phòng đã tạo! Hãy gửi mã này cho bạn cùng chơi:';
+                    document.getElementById('shareCodeArea').style.display = 'block';
+                    document.getElementById('generatedRoomCode').innerText = id;
+                });
+            } catch (err) {
+                document.getElementById('waitingStatus').innerText = 'Lỗi khởi tạo: ' + err.message;
+            }
         });
 
-        // CLICK: Nút Vào phòng (Khách vào - Quân Đen)
+        // CLICK: NÚT VÀO PHÒNG (QUÂN ĐEN)
         document.getElementById('btnJoinRoom').addEventListener('click', () => {
             const code = document.getElementById('roomCodeInput').value.trim();
             if (!code) {
                 alert("Bạn ơi, hãy nhập mã phòng do bạn mình gửi trước nhé!");
                 return;
             }
+            
+            if (typeof Peer === 'undefined') {
+                alert("Lỗi mạng: Không tìm thấy thư viện kết nối cờ. Hãy kiểm tra lại mạng hoặc tắt Adblock nhé!");
+                return;
+            }
+
             playSynthSound(300, 'triangle', 0.1);
             document.getElementById('chessConnectMenu').style.display = 'none';
             document.getElementById('chessWaitingScreen').style.display = 'block';
-            document.getElementById('waitingStatus').innerText = 'Đang dò sóng tìm phòng: ' + code + '...';
+            document.getElementById('waitingStatus').innerText = 'Đang định vị tọa độ phòng: ' + code + '...';
             document.getElementById('shareCodeArea').style.display = 'none';
 
-            peer = new Peer(); // Tạo ID ngẫu nhiên cho client kết nối
-            peer.on('open', () => {
+            try {
+                peer = new Peer(); 
                 setupPeerEvents();
-                conn = peer.connect(code); // Gọi lệnh bắt tay kết nối P2P
+                
+                peer.on('open', () => {
+                    conn = peer.connect(code); 
 
-                conn.on('open', () => {
-                    myRole = 'B';
-                    currentTurn = 'W'; // Quân Trắng đi trước
-                    initChessBoardData();
-                    setupConnectionDataChannel();
+                    // Cơ chế bảo vệ chống treo máy khi kết nối trạm
+                    const connTimeout = setTimeout(() => {
+                        if (!conn || !conn.open) {
+                            alert("Không thể kết nối! Vui lòng kiểm tra lại mã phòng hoặc bảo bạn mình giữ nguyên màn hình chờ nhé.");
+                            resetChessUI();
+                        }
+                    }, 10000);
 
-                    document.getElementById('chessWaitingScreen').style.display = 'none';
-                    document.getElementById('chessGameArea').style.display = 'block';
-                    renderChessBoard();
-                    playSynthSound(600, 'triangle', 0.25);
+                    conn.on('open', () => {
+                        clearTimeout(connTimeout);
+                        myRole = 'B';
+                        currentTurn = 'W'; 
+                        initChessBoardData();
+                        setupConnectionDataChannel();
+
+                        document.getElementById('chessWaitingScreen').style.display = 'none';
+                        document.getElementById('chessGameArea').style.display = 'block';
+                        renderChessBoard();
+                        playSynthSound(600, 'triangle', 0.25);
+                    });
                 });
-            });
+            } catch (err) {
+                alert("Lỗi kết nối: " + err.message);
+                resetChessUI();
+            }
         });
 
-        console.log("Hệ thống Chu kỳ Mưa sao băng 180s lãng mạn & Cờ Vua P2P đa thiết bị đã sẵn sàng!");
+        console.log("Hệ thống Mưa sao băng 180s & Cờ Vua P2P chống treo UI đã đi vào hoạt động ổn định!");
     </script>
 </body>
 </html>
