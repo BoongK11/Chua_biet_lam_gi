@@ -151,7 +151,7 @@
             font-size: 45px;
             margin-bottom: 10px;
         }
-        .menu-text {
+        .menu-box .menu-text {
             color: #fff;
             font-size: 20px;
             font-weight: bold;
@@ -325,7 +325,7 @@
             }
         }
 
-        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT
+        // XỬ LÝ NỀN DI CHUYỂN THEO CHUỘT (PC)
         document.addEventListener('mousemove', (e) => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -334,6 +334,17 @@
             const moveX = (mouseX / width) * 30;
             const moveY = (mouseY / height) * 30;
             document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
+        });
+
+        // XỬ LÝ NỀN DI CHUYỂN KHI NGHIÊNG ĐIỆN THOẠI (MOBILE CẢM BIẾN)
+        window.addEventListener('deviceorientation', (e) => {
+            if (e.gamma !== null && e.beta !== null) {
+                // e.gamma: độ nghiêng trái/phải (-90 đến 90)
+                // e.beta: độ nghiêng trước/sau (-180 đến 180)
+                const moveX = (e.gamma / 45) * 15; 
+                const moveY = ((e.beta - 45) / 45) * 15; // Trừ bớt 45 độ theo góc cầm máy tự nhiên
+                document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
+            }
         });
 
         // ĐỊNH NGHĨA CÁC PHẦN TỬ DOM GIAO DIỆN
@@ -352,7 +363,6 @@
         const spotifyPlayer = document.getElementById('spotifyPlayer');
 
         // DANH SÁCH BÀI HÁT PLAYLIST (Tự động map theo ô số từ 1 - 10)
-        // Bạn có thể tùy ý thay đổi các link Spotify embed dưới đây
         const classPlaylist = {
             "1": "https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181",
             "2": "https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821",
@@ -443,17 +453,16 @@
                         spotifyPlayer.src = classPlaylist[selectedNumber];
                         spotifyWrapper.style.display = 'block';
                     } else {
-                        // Nếu số không có nhạc định nghĩa (ví dụ >10)
                         spotifyWrapper.style.display = 'none';
                         spotifyPlayer.src = "";
-                        playSynthSound(300, 'sine', 0.1); // Tiếng báo lỗi nhẹ
+                        playSynthSound(300, 'sine', 0.1);
                     }
                 }
                 console.log("Bạn đã bấm ô số: " + selectedNumber);
             });
         });
 
-        console.log("Hệ thống Giao diện nâng cấp (Dynamic Music) đã sẵn sàng, phần Game để trống!");
+        console.log("Hệ thống Giao diện nâng cấp (Dynamic Music & Gyro Mobile) đã sẵn sàng!");
     </script>
 </body>
 </html>
