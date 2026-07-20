@@ -55,6 +55,7 @@ function isPathClear(from, to) {
     return true;
 }
 
+// Hàm kiểm tra các nước đi hợp lệ thông thường
 function isValidNormalMove(from, to) {
     const piece = boardState[from];
     if (!piece) return false;
@@ -97,7 +98,6 @@ function isSquareAttacked(squareIdx, enemyColor) {
     for (let i = 0; i < 64; i++) {
         const piece = boardState[i];
         if (piece && piece.startsWith(enemyColor)) {
-            // Tạm thời giả lập luật đi cơ bản để check ô bị kiểm soát
             if (isValidNormalMove(i, squareIdx)) return true;
         }
     }
@@ -162,7 +162,7 @@ function handleSquareClick(index) {
             piece && piece.endsWith('R') && piece.startsWith(myRole)) {
             
             if (canCastle(selectedSquare, index)) {
-                const isKingside = index > selectedSquare; // Xe bên phải Vua = Nhập thành gần
+                const isKingside = index > selectedSquare; 
                 let newKingIdx = isKingside ? selectedSquare + 2 : selectedSquare - 2;
                 let newRookIdx = isKingside ? selectedSquare + 1 : selectedSquare - 1;
 
@@ -185,6 +185,7 @@ function handleSquareClick(index) {
 
                 // Đổi lượt đi và vẽ lại UI
                 currentTurn = myRole === 'W' ? 'B' : 'W';
+                const oldSelectedSquare = selectedSquare;
                 selectedSquare = null;
                 renderChessBoard();
                 if (typeof playSynthSound === 'function') playSynthSound(523.25, 'sine', 0.2);
@@ -193,7 +194,7 @@ function handleSquareClick(index) {
                 if (conn && conn.open) {
                     conn.send({
                         type: 'castle',
-                        kingFrom: selectedSquare,
+                        kingFrom: oldSelectedSquare,
                         kingTo: newKingIdx,
                         rookFrom: index,
                         rookTo: newRookIdx,
@@ -219,6 +220,7 @@ function handleSquareClick(index) {
             boardState[selectedSquare] = null;
 
             currentTurn = myRole === 'W' ? 'B' : 'W';
+            const oldSelectedSquare = selectedSquare;
             selectedSquare = null;
             renderChessBoard();
             if (typeof playSynthSound === 'function') playSynthSound(440, 'triangle', 0.15);
@@ -227,7 +229,7 @@ function handleSquareClick(index) {
             if (conn && conn.open) {
                 conn.send({
                     type: 'move',
-                    from: selectedSquare,
+                    from: oldSelectedSquare,
                     to: index,
                     board: boardState,
                     nextTurn: currentTurn
@@ -267,7 +269,7 @@ function renderChessBoard() {
         }
     }
 
-    // Vẽ 64 ô cờ (Nếu bạn chơi quân Đen, bàn cờ sẽ đảo ngược góc nhìn để dễ nhìn)
+    // Vẽ 64 ô cờ
     for (let i = 0; i < 64; i++) {
         const index = myRole === 'B' ? 63 - i : i;
         const row = Math.floor(index / 8);
@@ -282,11 +284,9 @@ function renderChessBoard() {
         square.style.userSelect = 'none';
         square.style.transition = 'all 0.2s';
 
-        // Màu nền bàn cờ Caro
         const isLight = (row + col) % 2 === 0;
         square.style.backgroundColor = isLight ? '#f0d9b5' : '#b58863';
 
-        // Đổ bóng hiển thị quân cờ màu tương ứng
         const piece = boardState[index];
         if (piece) {
             square.innerText = pieceSymbols[piece] || '';
@@ -294,15 +294,12 @@ function renderChessBoard() {
             square.style.textShadow = piece.startsWith('W') ? '0 0 4px #000' : '0 0 4px #fff';
         }
 
-        // Highlight ô đang được lựa chọn click
         if (selectedSquare === index) {
             square.style.backgroundColor = '#7b9c60';
         } else if (selectedSquare !== null && isValidNormalMove(selectedSquare, index)) {
-            // Gợi ý chấm sáng các ô có thể đi hợp lệ
             square.style.boxShadow = 'inset 0 0 0 4px #00ffcc';
         }
 
-        // Đăng ký bộ lắng nghe sự kiện bấm ô cờ
         square.addEventListener('click', () => handleSquareClick(index));
         boardDiv.appendChild(square);
     }
@@ -325,7 +322,6 @@ function setupConnectionDataChannel() {
             if (typeof playSynthSound === 'function') playSynthSound(300, 'sine', 0.15);
         }
         else if (data.type === 'castle') {
-            // Đồng bộ nước đi nhập thành từ phía đối thủ gửi tới
             boardState[data.kingTo] = boardState[data.kingFrom];
             boardState[data.rookTo] = boardState[data.rookFrom];
             boardState[data.kingFrom] = null;
@@ -356,18 +352,22 @@ document.getElementById('btnCreateRoom').addEventListener('click', () => {
     document.getElementById('waitingStatus').innerText = 'Đang xin mã phòng từ hệ thống...';
 
     try {
-        peer = new Peer();
+        // TẠO MÃ PHÒNG GỒM 6 SỐ NGẪU NHIÊN (Từ 100000 đến 999999)
+        const randomRoomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Khởi tạo Peer kèm mã phòng cố định tự chọn này
+        peer = new Peer(randomRoomCode);
         setupPeerEvents();
 
         peer.on('open', (id) => {
             document.getElementById('waitingStatus').innerText = 'Hãy gửi mã này cho bạn của bạn:';
             document.getElementById('shareCodeArea').style.display = 'block';
-            document.getElementById('generatedRoomCode').innerText = id;
+            document.getElementById('generatedRoomCode').innerText = id; // id lúc này sẽ hiển thị 6 chữ số
         });
 
         peer.on('connection', (incomingConn) => {
             conn = incomingConn;
-            myRole = 'W'; // Chủ phòng cầm quân Trắng
+            myRole = 'W'; 
             currentTurn = 'W';
             initChessBoardData();
             setupConnectionDataChannel();
@@ -411,7 +411,7 @@ document.getElementById('btnJoinRoom').addEventListener('click', () => {
 
             conn.on('open', () => {
                 clearTimeout(connTimeout);
-                myRole = 'B'; // Người vào sau cầm quân Đen
+                myRole = 'B'; 
                 currentTurn = 'W';
                 initChessBoardData();
                 setupConnectionDataChannel();
