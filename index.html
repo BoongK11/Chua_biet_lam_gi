@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Web Của Tôi</title>
     <!-- Tạo logo icon hình tròn chữ 9A phát sáng cho tab trình duyệt -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%225%22/><text y=%2250%22 x=%2250%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Segoe UI, Arial, sans-serif%22 font-weight=%22bold%22 font-size=%2250%22 fill=%22%2300ffcc%22 style=%22text-shadow: 0 0 10px %2300ffcc;%22>9A</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23000%22 stroke=%22%2300ffcc%22 stroke-width=%222%22/><text x=%2250%22 y=%2265%22 font-size=%2250%22 font-weight=%22bold%22 fill=%22%2300ffcc%22 text-anchor=%22middle%22 font-family=%22Arial%22>9A</text></svg>">
     <!-- Tích hợp mạng P2P PeerJS để kết nối 2 thiết bị không cần server backend -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
@@ -127,42 +127,6 @@
             backdrop-filter: blur(15px);
             overflow-y: auto;
         }
-        /* CSS CHO MENU LỰA CHỌN (MUSIC & MINI GAME) */
-        .menu-container {
-            display: flex;
-            gap: 20px;
-            padding: 60px 40px 40px 40px;
-            justify-content: center;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        .menu-box {
-            flex: 1;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-            border: 2px solid #00ffcc;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
-            border-radius: 15px;
-            padding: 30px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            user-select: none;
-        }
-        .menu-box:hover {
-            transform: scale(1.05) translateY(-5px);
-            border-color: #ff007f;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
-        }
-        .menu-icon {
-            font-size: 45px;
-            margin-bottom: 10px;
-        }
-        .menu-box .menu-text {
-            color: #fff;
-            font-size: 20px;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
         /* CSS NÚT QUAY LẠI GÓC TRÊN KHUNG CHỨA */
         .back-btn {
             background: transparent;
@@ -184,41 +148,6 @@
             border-color: #fff;
             box-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
-        /* CSS CHO KHUNG LƯỚI CHỨA CÁC Ô SỐ */
-        .number-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            padding: 60px 30px 25px 30px;
-            max-width: 450px;
-            margin: 0 auto;
-        }
-        /* CSS CHO TỪNG Ô SỐ NEON */
-        .number-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #00ffcc, #0011ff);
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            user-select: none;
-        }
-        .number-box:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 0 20px #00ffcc, 0 0 30px #0011ff;
-            background: linear-gradient(45deg, #ff007f, #ff5722);
-        }
-        .number-box.active {
-            background: linear-gradient(45deg, #ff007f, #ff5722);
-            box-shadow: 0 0 20px #ff007f;
-        }
         .close-btn {
             position: absolute;
             top: 5px;
@@ -234,15 +163,11 @@
         .close-btn:hover {
             color: #ff007f;
         }
-        @keyframes fadeInMusic {
+        @keyframes fadeInGame {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 480px) {
-            .menu-container { flex-direction: column; gap: 15px; padding: 60px 30px 30px 30px; }
-            .menu-box { padding: 20px; }
-            .number-container { grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 60px 20px 20px 20px; }
-            .number-box { width: 55px; height: 55px; font-size: 22px; }
             h1 { font-size: 45px; }
             .lop-hoc { font-size: 24px; }
             p { font-size: 20px; }
@@ -262,49 +187,15 @@
         <div class="popup-content">
             <span class="close-btn" id="closePopupBtn">&times;</span>
 
-            <!-- MENU LỰA CHỌN BAN ĐẦU -->
-            <div id="menuContainer" class="menu-container">
-                <div class="menu-box" id="chooseMusicBtn">
-                    <div class="menu-icon">🎵</div>
-                    <div class="menu-text">Music</div>
-                </div>
-                <div class="menu-box" id="chooseGameBtn">
-                    <div class="menu-icon">🎮</div>
-                    <div class="menu-text">Mini Game</div>
-                </div>
-            </div>
-
-            <!-- PHẦN HIỂN THỊ MUSIC -->
-            <div id="musicSection" style="display: none; animation: fadeInMusic 0.3s ease-out;">
-                <button class="back-btn" id="backFromMusic">⬅ Quay lại</button>
-                <div class="number-container">
-                    <div class="number-box">1</div>
-                    <div class="number-box">2</div>
-                    <div class="number-box">3</div>
-                    <div class="number-box">4</div>
-                    <div class="number-box">5</div>
-                    <div class="number-box">6</div>
-                    <div class="number-box">7</div>
-                    <div class="number-box">8</div>
-                    <div class="number-box">9</div>
-                    <div class="number-box">10</div>
-                </div>
-                
-                <div id="spotifyWrapper" style="display: none; padding: 0 30px 30px 30px; max-width: 450px; margin: 0 auto;">
-                    <iframe id="spotifyPlayer" style="border-radius:12px" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                </div>
-            </div>
-
             <!-- PHẦN HIỂN THỊ MINI GAME: CỜ VUA LUẬT CHUẨN P2P -->
-            <div id="gameSection" style="display: none; padding: 60px 20px 30px 20px; text-align: center; max-width: 480px; margin: 0 auto; animation: fadeInMusic 0.3s ease-out;">
-                <button class="back-btn" id="backFromGame">⬅ Quay lại</button>
+            <div id="gameSection" style="padding: 60px 20px 30px 20px; text-align: center; max-width: 480px; margin: 0 auto; animation: fadeInGame 0.3s ease-out;">
                 <h3 style="color: #ff007f; font-size: 26px; margin: 5px 0 15px 0; text-shadow: 0 0 10px #ff007f;">Cờ Vua Đối Kháng</h3>
                 
                 <div id="chessConnectMenu" style="margin-top: 15px;">
                     <button class="btn" id="btnCreateRoom" style="background: linear-gradient(45deg, #00ffcc, #0011ff); font-size: 15px; padding: 10px 15px; width: 85%; margin-bottom: 12px;">Tạo Phòng (Quân Trắng)</button>
                     <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin: 5px 0;">- HOẶC -</div>
-                    <input type="text" id="roomCodeInput" placeholder="Nhập mã phòng bạn cấp..." style="padding: 10px; width: 80%; border-radius: 8px; border: 1px solid #00ffcc; background: rgba(0,0,0,0.6); color: #fff; text-align: center; font-size: 15px; margin-bottom: 10px; outline: none;">
-                    <button class="btn" id="btnJoinRoom" style="font-size: 15px; padding: 10px 15px; width: 85%;">Vào Phòng (Quân Đen)</button>
+                    <input type="text" id="roomCodeInput" placeholder="Nhập mã phòng bạn cấp..." style="padding: 10px; width: 80%; border-radius: 8px; border: 1px solid #00ffcc; background: rgba(0,255,204,0.05); color: #fff; font-size: 14px;">
+                    <button class="btn" id="btnJoinRoom" style="font-size: 15px; padding: 10px 15px; width: 85%; margin-top: 12px;">Vào Phòng (Quân Đen)</button>
                 </div>
 
                 <div id="chessWaitingScreen" style="display: none; margin-top: 15px; color: #fff;">
@@ -316,7 +207,7 @@
 
                 <div id="chessGameArea" style="display: none; margin-top: 10px;">
                     <div id="gameInfoStatus" style="color: #fff; font-size: 16px; margin-bottom: 12px; font-weight: bold;">Chờ kết nối...</div>
-                    <div id="chessBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; aspect-ratio: 1; border: 3px solid rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(0,255,204,0.2); border-radius: 8px; overflow: hidden; background-color: rgba(0,0,0,0.4);"></div>
+                    <div id="chessBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; aspect-ratio: 1; border: 3px solid rgba(255,255,255,0.15); border-radius: 8px; background: #0a0a0a; box-shadow: 0 0 20px rgba(0,255,204,0.2);"></div>
                     <div style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 8px;">Luật chuẩn: Chạm quân của bạn, các ô đi hợp lệ sẽ sáng viền để bạn di chuyển!</div>
                 </div>
             </div>
@@ -428,42 +319,12 @@
         const popup = document.getElementById('imagePopup');
         const openBtn = document.getElementById('openPopupBtn');
         const closeBtn = document.getElementById('closePopupBtn');
-        const menuContainer = document.getElementById('menuContainer');
-        const musicSection = document.getElementById('musicSection');
         const gameSection = document.getElementById('gameSection');
-        const chooseMusicBtn = document.getElementById('chooseMusicBtn');
-        const chooseGameBtn = document.getElementById('chooseGameBtn');
-        const backFromMusic = document.getElementById('backFromMusic');
-        const backFromGame = document.getElementById('backFromGame');
-        const spotifyWrapper = document.getElementById('spotifyWrapper');
-        const spotifyPlayer = document.getElementById('spotifyPlayer');
-
-        const classPlaylist = {
-            "1": "https://open.spotify.com/embed/track/331pu1rdL2Yn7Z3F1RNXBR?utm_source=generator&si=6a1bdae1c36546a6&time=181",
-            "2": "https://open.spotify.com/embed/track/07SQzveMFNsEBl8eKLbVIG?utm_source=generator&si=39d7229af6bb4821",
-            "3": "https://open.spotify.com/embed/track/7ouMYWpwJ422jRcDASZB7P",
-            "4": "https://open.spotify.com/embed/track/4PTG3Z6ehGkBF2zI7YkR5C",
-            "5": "https://open.spotify.com/embed/track/60S2vJv3nZ5j6Sg8N2z3sl",
-            "6": "https://open.spotify.com/embed/track/1xsYJ8XGjGB1zl18zT4JAz",
-            "7": "https://open.spotify.com/embed/track/5QO79kh1nOghj2pI0X4n6C",
-            "8": "https://open.spotify.com/embed/track/0VjIjW4GlUZAMYd2v2ZcTI",
-            "9": "https://open.spotify.com/embed/track/2t8yEwVjZjyq754fhJjAGn",
-            "10": "https://open.spotify.com/embed/track/4iJyoZe61jG55T954j75Jg"
-        };
-
-        function resetPopupToMenu() {
-            menuContainer.style.display = 'flex';
-            musicSection.style.display = 'none';
-            gameSection.style.display = 'none';
-            spotifyWrapper.style.display = 'none';
-            spotifyPlayer.src = "";
-            document.querySelectorAll('.number-box').forEach(b => b.classList.remove('active'));
-            leaveChessRoom();
-        }
 
         openBtn.addEventListener('click', () => {
             playSynthSound(250, 'triangle', 0.12);
-            resetPopupToMenu();
+            gameSection.style.display = 'block';
+            leaveChessRoom();
             popup.style.display = 'flex';
         });
 
@@ -477,52 +338,6 @@
                 playSynthSound(180, 'sine', 0.1);
                 popup.style.display = 'none';
             }
-        });
-
-        chooseMusicBtn.addEventListener('click', () => {
-            playSynthSound(350, 'triangle', 0.1);
-            menuContainer.style.display = 'none';
-            musicSection.style.display = 'block';
-        });
-
-        chooseGameBtn.addEventListener('click', () => {
-            playSynthSound(350, 'triangle', 0.1);
-            menuContainer.style.display = 'none';
-            gameSection.style.display = 'block';
-        });
-
-        backFromMusic.addEventListener('click', () => {
-            playSynthSound(200, 'sine', 0.1);
-            resetPopupToMenu();
-        });
-
-        backFromGame.addEventListener('click', () => {
-            playSynthSound(200, 'sine', 0.1);
-            resetPopupToMenu();
-        });
-
-        const numberBoxes = document.querySelectorAll('.number-box');
-        numberBoxes.forEach(box => {
-            box.addEventListener('click', () => {
-                const selectedNumber = box.innerText.trim();
-                playSynthSound(520, 'triangle', 0.15);
-
-                if(box.classList.contains('active')) {
-                    box.classList.remove('active');
-                    spotifyWrapper.style.display = 'none';
-                    spotifyPlayer.src = "";
-                } else {
-                    numberBoxes.forEach(b => b.classList.remove('active'));
-                    box.classList.add('active');
-                    if(classPlaylist[selectedNumber]) {
-                        spotifyPlayer.src = classPlaylist[selectedNumber];
-                        spotifyWrapper.style.display = 'block';
-                    } else {
-                        spotifyWrapper.style.display = 'none';
-                        spotifyPlayer.src = "";
-                    }
-                }
-            });
         });
 
         // ==========================================
@@ -832,7 +647,7 @@
                 
                 const timeoutCheck = setTimeout(() => {
                     if (!peer || !peer.id) {
-                        document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lần nữa nha!</span>';
+                        document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lại nhé!</span>';
                     }
                 }, 10000);
 
