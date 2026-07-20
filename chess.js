@@ -1,368 +1,424 @@
-// ==========================================
-// KHU VỰC THUẬT TOÁN LUẬT CỜ VUA CHUẨN QUỐC TẾ
-// ==========================================
+// =================================================================
+// KHU VỰC THUẬT TOÁN LUẬT CỜ VUA CHUẨN QUỐC TẾ & KẾT NỐI P2P PEERJS
+// =================================================================
+
+// 1. CÁC BIẾN TRẠNG THÁI TOÀN CỤC
 let peer = null;
 let conn = null;
-let myRole = '';       
-let currentTurn = 'W';  
-let boardState = [];    
-let selectedSquare = null; 
+let myRole = null;       // 'W' (Trắng) hoặc 'B' (Đen)
+let currentTurn = 'W';   // Lượt đi hiện tại ('W' đi trước)
+let boardState = [];     // Mảng 64 phần tử đại diện bàn cờ
+let selectedSquare = null; // Ô đang được chọn chọn (0-63)
 
-const pieceSymbols = { 'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞', 'P': '♟' };
-const initialRowPieces = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
+// CÁC BIẾN THEO DÕI ĐIỀU KIỆN NHẬP THÀNH (CASTLING)
+let whiteKingMoved = false;
+let whiteRookAMoved = false; // Xe cánh Hậu (Cột A - Ô 56)
+let whiteRookHMoved = false; // Xe cánh Vua (Cột H - Ô 63)
 
+let blackKingMoved = false;
+let blackRookAMoved = false; // Xe cánh Hậu (Cột A - Ô 0)
+let blackRookHMoved = false; // Xe cánh Vua (Cột H - Ô 7)
+
+// 2. KHỞI TẠO DỮ LIỆU BÀN CỜ BAN ĐẦU
 function initChessBoardData() {
-    boardState = [];
-    for (let r = 0; r < 8; r++) {
-        let row = [];
-        for (let c = 0; c < 8; c++) {
-            if (r === 0) row.push({ type: initialRowPieces[c], color: 'B', hasMoved: false });
-            else if (r === 1) row.push({ type: 'P', color: 'B', hasMoved: false });
-            else if (r === 6) row.push({ type: 'P', color: 'W', hasMoved: false });
-            else if (r === 7) row.push({ type: initialRowPieces[c], color: 'W', hasMoved: false });
-            else row.push(null);
-        }
-        boardState.push(row);
-    }
+    boardState = [
+        'BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR', // Dòng 0 (0-7): Quân Đen
+        'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', // Dòng 1 (8-15)
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', // Dòng 6 (48-55)
+        'WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR'  // Dòng 7 (56-63): Quân Trắng
+    ];
+    
+    // Khởi tạo lại trạng thái chưa di chuyển của Vua và Xe
+    whiteKingMoved = false; whiteRookAMoved = false; whiteRookHMoved = false;
+    blackKingMoved = false; blackRookAMoved = false; blackRookHMoved = false;
+    selectedSquare = null;
 }
 
-// HÀM KIỂM TRA ĐƯỜNG ĐI TRỐNG (Dành cho Xe, Tượng, Hậu)
-function isPathClear(fromR, fromC, toR, toC) {
-    const deltaR = Math.sign(toR - fromR);
-    const deltaC = Math.sign(toC - fromC);
-    let currR = fromR + deltaR;
-    let currC = fromC + deltaC;
-
-    while (currR !== toR || currC !== toC) {
-        if (boardState[currR][currC] !== null) {
-            return false; // Bị vướng quân cờ trên đường đi
-        }
-        currR += deltaR;
-        currC += deltaC;
+// 3. THUẬT TOÁN LUẬT DI CHUYỂN CƠ BẢN
+function isPathClear(from, to) {
+    const fromRow = Math.floor(from / 8), fromCol = from % 8;
+    const toRow = Math.floor(to / 8), toCol = to % 8;
+    const rowStep = Math.sign(toRow - fromRow);
+    const colStep = Math.sign(toCol - fromCol);
+    
+    let r = fromRow + rowStep;
+    let c = fromCol + colStep;
+    while (r !== toRow || c !== toCol) {
+        if (boardState[r * 8 + c]) return false;
+        r += rowStep;
+        c += colStep;
     }
     return true;
 }
 
-// THUẬT TOÁN KIỂM TRA NƯỚC ĐI HỢP LỆ THEO TỪNG QUÂN
-function isValidMove(fromR, fromC, toR, toC) {
-    const piece = boardState[fromR][fromC];
-    const target = boardState[toR][toC];
+function isValidNormalMove(from, to) {
+    const piece = boardState[from];
+    if (!piece) return false;
+    const target = boardState[to];
+    
+    // Không thể ăn quân cùng màu
+    if (target && target.startsWith(piece[0])) return false;
 
-    // 1. Không thể đi vào ô có quân cùng màu
-    if (target && target.color === piece.color) return false;
+    const fromRow = Math.floor(from / 8), fromCol = from % 8;
+    const toRow = Math.floor(to / 8), toCol = to % 8;
+    const dr = Math.abs(toRow - fromRow);
+    const dc = Math.abs(toCol - fromCol);
 
-    const diffR = Math.abs(toR - fromR);
-    const diffC = Math.abs(toC - fromC);
-
-    switch (piece.type) {
-        case 'K': // VUA: Đi 1 ô duy nhất về mọi hướng
-            return diffR <= 1 && diffC <= 1;
-
-        case 'Q': // HẬU: Kết hợp Xe + Tượng không giới hạn ô
-            if ((fromR === toR || fromC === toC) || (diffR === diffC)) {
-                return isPathClear(fromR, fromC, toR, toC);
+    switch(piece[1]) {
+        case 'P': // Tốt
+            const dir = piece[0] === 'W' ? -1 : 1;
+            const startRow = piece[0] === 'W' ? 6 : 1;
+            if (fromCol === toCol && !target) {
+                if (toRow - fromRow === dir) return true;
+                if (fromRow === startRow && toRow - fromRow === 2 * dir && !boardState[(fromRow + dir) * 8 + fromCol]) return true;
             }
+            if (dc === 1 && toRow - fromRow === dir && target) return true;
             return false;
-
-        case 'R': // XE: Đi thẳng dọc/ngang không giới hạn ô
-            if (fromR === toR || fromC === toC) {
-                return isPathClear(fromR, fromC, toR, toC);
-            }
-            return false;
-
-        case 'B': // TƯỢNG: Đi chéo không giới hạn ô
-            if (diffR === diffC) {
-                return isPathClear(fromR, fromC, toR, toC);
-            }
-            return false;
-
-        case 'N': // MÃ: Hình chữ L (2-1 hoặc 1-2) và được phép nhảy qua đầu quân khác
-            return (diffR === 2 && diffC === 1) || (diffR === 1 && diffC === 2);
-
-        case 'P': // TỐT: Đi thẳng 1 ô (nước đầu đi 2), ăn chéo 1 ô trước
-            const direction = piece.color === 'W' ? -1 : 1; // Quân trắng đi lên (-R), quân đen đi xuống (+R)
-            
-            // Đi thẳng 1 ô
-            if (fromC === toC && toR === fromR + direction && !target) {
-                return true;
-            }
-            // Đi thẳng 2 ô ở nước đi đầu tiên
-            if (fromC === toC && !piece.hasMoved && toR === fromR + 2 * direction) {
-                // Kiểm tra không có quân cờ nào cản ở cả ô giữa và ô đích
-                if (!boardState[fromR + direction][fromC] && !target) {
-                    return true;
-                }
-            }
-            // Ăn chéo 1 ô
-            if (diffC === 1 && toR === fromR + direction && target && target.color !== piece.color) {
-                return true;
-            }
-            return false;
+        case 'R': // Xe
+            return (fromRow === toRow || fromCol === toCol) && isPathClear(from, to);
+        case 'N': // Mã
+            return (dr === 2 && dc === 1) || (dr === 1 && dc === 2);
+        case 'B': // Tượng
+            return (dr === dc) && isPathClear(from, to);
+        case 'Q': // Hậu
+            return (fromRow === toRow || fromCol === toCol || dr === dc) && isPathClear(from, to);
+        case 'K': // Vua (Đi 1 ô)
+            return (dr <= 1 && dc <= 1);
     }
     return false;
 }
 
-// TÌM TẤT CẢ CÁC Ô ĐI HỢP LỆ CỦA QUÂN CỜ ĐANG CHỌN ĐỂ HIỂN THỊ HƯỚNG DẪN
-function getValidMovesForPiece(r, c) {
-    let validMoves = [];
-    for (let targetR = 0; targetR < 8; targetR++) {
-        for (let targetC = 0; targetC < 8; targetC++) {
-            if (isValidMove(r, c, targetR, targetC)) {
-                validMoves.push({ r: targetR, c: targetC });
-            }
+// Hàm đơn giản kiểm tra xem một ô có đang bị tấn công bởi đối phương không
+function isSquareAttacked(squareIdx, enemyColor) {
+    for (let i = 0; i < 64; i++) {
+        const piece = boardState[i];
+        if (piece && piece.startsWith(enemyColor)) {
+            // Tạm thời giả lập luật đi cơ bản để check ô bị kiểm soát
+            if (isValidNormalMove(i, squareIdx)) return true;
         }
     }
-    return validMoves;
+    return false;
 }
 
-function renderChessBoard() {
-    const boardEl = document.getElementById('chessBoard');
-    boardEl.innerHTML = '';
-
-    // Lấy danh sách các ô gợi ý hợp lệ nếu có quân đang được chọn
-    let highlightedSquares = [];
-    if (selectedSquare) {
-        highlightedSquares = getValidMovesForPiece(selectedSquare.r, selectedSquare.c);
-    }
-
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            const square = document.createElement('div');
-            square.style.display = 'flex';
-            square.style.justifyContent = 'center';
-            square.style.alignItems = 'center';
-            square.style.fontSize = '28px';
-            square.style.cursor = 'pointer';
-            square.style.userSelect = 'none';
-            square.style.aspectRatio = '1';
-
-            const isDarkCell = (r + c) % 2 === 1;
-            square.style.backgroundColor = isDarkCell ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.07)';
-
-            // Đổ màu viền hồng cho ô đang chọn
-            if (selectedSquare && selectedSquare.r === r && selectedSquare.c === c) {
-                square.style.boxShadow = 'inset 0 0 12px #ff007f';
-            }
-
-            // Đổ màu viền xanh neon gợi ý cho các ô di chuyển hợp lệ
-            const isHint = highlightedSquares.some(m => m.r === r && m.c === c);
-            if (isHint) {
-                square.style.boxShadow = 'inset 0 0 10px #00ffcc';
-            }
-
-            const piece = boardState[r][c];
-            if (piece) {
-                square.innerText = pieceSymbols[piece.type];
-                if (piece.color === 'W') {
-                    square.style.color = '#00ffcc'; 
-                    square.style.textShadow = '0 0 8px #00ffcc';
-                } else {
-                    square.style.color = '#ff007f'; 
-                    square.style.textShadow = '0 0 8px #ff007f';
-                }
-            }
-
-            square.addEventListener('click', () => handleSquareClick(r, c, isHint));
-            boardEl.appendChild(square);
-        }
-    }
-
-    const infoStatus = document.getElementById('gameInfoStatus');
-    const roleText = myRole === 'W' ? 'Bên TRẮNG (Bạn)' : 'Bên ĐEN (Bạn)';
-    const turnText = currentTurn === myRole ? 'LƯỢT CỦA BẠN' : 'ĐỐI THỦ ĐANG NGHĨ...';
-    const turnColor = currentTurn === myRole ? '#00ffcc' : '#ff007f';
-    infoStatus.innerHTML = `<span style="color:#fff">${roleText}</span> — <span style="color:${turnColor}; text-shadow: 0 0 5px ${turnColor};">${turnText}</span>`;
+function isKingInCheck(color) {
+    const kingPiece = color + 'K';
+    const kingIdx = boardState.indexOf(kingPiece);
+    if (kingIdx === -1) return false;
+    return isSquareAttacked(kingIdx, color === 'W' ? 'B' : 'W');
 }
 
-function handleSquareClick(r, c, isHint) {
-    if (!conn) return; 
-    if (currentTurn !== myRole) return; 
+// 4. LOGIC TÍNH NĂNG NHẬP THÀNH (ẤN VUA -> ẤN XE)
+function canCastle(kingIdx, rookIdx) {
+    const king = boardState[kingIdx];
+    const rook = boardState[rookIdx];
+    
+    if (!king || !rook || !king.endsWith('K') || !rook.endsWith('R')) return false;
+    const isWhite = king.startsWith('W');
+    const enemyColor = isWhite ? 'B' : 'W';
 
-    const piece = boardState[r][c];
+    // Điều kiện 1: Vua và Xe định nhập thành phải chưa từng di chuyển
+    if (isWhite) {
+        if (whiteKingMoved) return false;
+        if (rookIdx === 56 && whiteRookAMoved) return false;
+        if (rookIdx === 63 && whiteRookHMoved) return false;
+    } else {
+        if (blackKingMoved) return false;
+        if (rookIdx === 0 && blackRookAMoved) return false;
+        if (rookIdx === 7 && blackRookHMoved) return false;
+    }
 
-    if (selectedSquare) {
-        // Nếu ấn lại đúng ô cũ thì hủy chọn
-        if (selectedSquare.r === r && selectedSquare.c === c) {
-            selectedSquare = null;
-            renderChessBoard();
-            return;
-        }
+    // Điều kiện 2: Không có quân xen giữa Vua và Xe
+    const step = rookIdx > kingIdx ? 1 : -1;
+    for (let i = kingIdx + step; i !== rookIdx; i += step) {
+        if (boardState[i]) return false;
+    }
 
-        // Thực hiện di chuyển nếu ô nhắm tới nằm trong danh sách gợi ý hợp lệ (isHint)
-        if (isHint) {
-            const movingPiece = boardState[selectedSquare.r][selectedSquare.c];
+    // Điều kiện 3: Vua hiện tại không bị chiếu
+    if (isKingInCheck(isWhite ? 'W' : 'B')) return false;
+
+    // Điều kiện 4: Vua không đi qua và không dừng lại ở ô bị quân địch kiểm soát
+    const nextSquare1 = kingIdx + step;
+    const nextSquare2 = kingIdx + step * 2;
+    if (isSquareAttacked(nextSquare1, enemyColor) || isSquareAttacked(nextSquare2, enemyColor)) return false;
+
+    return true;
+}
+
+// 5. XỬ LÝ SỰ KIỆN CLICK TRÊN BÀN CỜ
+function handleSquareClick(index) {
+    if (currentTurn !== myRole) return; // Không phải lượt của bạn
+
+    const piece = boardState[index];
+
+    if (selectedSquare !== null) {
+        const selectedPiece = boardState[selectedSquare];
+
+        // TRƯỜNG HỢP: NHẬP THÀNH (Ấn quân Vua trước -> Bấm quân Xe của mình)
+        if (selectedPiece && selectedPiece.endsWith('K') && selectedPiece.startsWith(myRole) &&
+            piece && piece.endsWith('R') && piece.startsWith(myRole)) {
             
-            // Đánh dấu quân cờ này đã từng di chuyển (Phục vụ tính luật Tốt đi 2 ô nước đầu)
-            movingPiece.hasMoved = true;
+            if (canCastle(selectedSquare, index)) {
+                const isKingside = index > selectedSquare; // Xe bên phải Vua = Nhập thành gần
+                let newKingIdx = isKingside ? selectedSquare + 2 : selectedSquare - 2;
+                let newRookIdx = isKingside ? selectedSquare + 1 : selectedSquare - 1;
 
-            // Tiến hành ăn quân/di chuyển dữ liệu
-            boardState[r][c] = movingPiece;
-            boardState[selectedSquare.r][selectedSquare.c] = null;
+                // Thực hiện hoán đổi vị trí trên mảng dữ liệu
+                boardState[newKingIdx] = selectedPiece;
+                boardState[newRookIdx] = piece;
+                boardState[selectedSquare] = null;
+                boardState[index] = null;
 
-            // Gửi trạng thái bàn cờ đồng bộ sang cho đối thủ P2P
-            conn.send({
-                type: 'MOVE',
-                board: boardState
-            });
+                // Cập nhật trạng thái di chuyển
+                if (myRole === 'W') {
+                    whiteKingMoved = true;
+                    if (index === 56) whiteRookAMoved = true;
+                    if (index === 63) whiteRookHMoved = true;
+                } else {
+                    blackKingMoved = true;
+                    if (index === 0) blackRookAMoved = true;
+                    if (index === 7) blackRookHMoved = true;
+                }
 
-            selectedSquare = null;
-            currentTurn = myRole === 'W' ? 'B' : 'W'; 
-            playSynthSound(400, 'triangle', 0.1);
-            renderChessBoard();
-        } else {
-            // Nếu ấn vào một ô không hợp lệ khác: 
-            // Thay vì di chuyển bừa, hệ thống sẽ kiểm tra xem ô đó có phải quân mình không để đổi lựa chọn quân cờ
-            if (piece && piece.color === myRole) {
-                selectedSquare = { r, c };
-                playSynthSound(580, 'sine', 0.08);
-                renderChessBoard();
-            } else {
-                // Ấn vào đất trống hoặc quân địch không hợp lệ thì hủy chọn quân cũ
+                // Đổi lượt đi và vẽ lại UI
+                currentTurn = myRole === 'W' ? 'B' : 'W';
                 selectedSquare = null;
                 renderChessBoard();
+                if (typeof playSynthSound === 'function') playSynthSound(523.25, 'sine', 0.2);
+
+                // Gửi gói tin đồng bộ Nhập thành sang đối thủ qua PeerJS
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'castle',
+                        kingFrom: selectedSquare,
+                        kingTo: newKingIdx,
+                        rookFrom: index,
+                        rookTo: newRookIdx,
+                        nextTurn: currentTurn
+                    });
+                }
+                return;
             }
         }
-    } else {
-        // Nếu chưa chọn quân, tiến hành chọn quân cờ của phe mình
-        if (piece && piece.color === myRole) {
-            selectedSquare = { r, c };
-            playSynthSound(580, 'sine', 0.08);
+
+        // TRƯỜNG HỢP: DI CHUYỂN HOẶC ĂN QUÂN BÌNH THƯỜNG
+        if (isValidNormalMove(selectedSquare, index)) {
+            // Lưu giữ lại lịch sử di chuyển phục vụ luật Nhập thành
+            if (selectedPiece === 'WK') whiteKingMoved = true;
+            if (selectedPiece === 'BK') blackKingMoved = true;
+            if (selectedSquare === 56) whiteRookAMoved = true;
+            if (selectedSquare === 63) whiteRookHMoved = true;
+            if (selectedSquare === 0) blackRookAMoved = true;
+            if (selectedSquare === 7) blackRookHMoved = true;
+
+            // Thực thi di chuyển
+            boardState[index] = selectedPiece;
+            boardState[selectedSquare] = null;
+
+            currentTurn = myRole === 'W' ? 'B' : 'W';
+            selectedSquare = null;
             renderChessBoard();
+            if (typeof playSynthSound === 'function') playSynthSound(440, 'triangle', 0.15);
+
+            // Gửi gói tin di chuyển thông thường sang đối thủ
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'move',
+                    from: selectedSquare,
+                    to: index,
+                    board: boardState,
+                    nextTurn: currentTurn
+                });
+            }
+            return;
         }
+    }
+
+    // Chọn quân cờ (Chỉ chọn được quân của chính mình)
+    if (piece && piece.startsWith(myRole)) {
+        selectedSquare = index;
+        renderChessBoard();
+    } else {
+        selectedSquare = null;
+        renderChessBoard();
     }
 }
 
-function setupPeerEvents() {
-    peer.on('error', (err) => {
-        console.error(err);
-        document.getElementById('waitingStatus').innerHTML = `<span style="color:#ff007f; font-size:14px;">Lỗi kết nối P2P (${err.type}). Hãy tắt Adblock hoặc F5 tải lại trang nhé!</span>`;
-        setTimeout(resetChessUI, 4000);
-    });
+// 6. ĐỒ HỌA VÀ HIỂN THỊ GIAO DIỆN BÀN CỜ (HTML RENDER)
+const pieceSymbols = {
+    'WK': '♔', 'WQ': '♕', 'WR': '♖', 'WB': '♗', 'WN': '♘', 'WP': '♙',
+    'BK': '♚', 'BQ': '♛', 'BR': '♜', 'BB': '♝', 'BN': '♞', 'BP': '♟'
+};
 
-    peer.on('connection', (connection) => {
-        if (conn) {
-            connection.close(); 
-            return;
+function renderChessBoard() {
+    const boardDiv = document.getElementById('chessBoard');
+    if (!boardDiv) return;
+    boardDiv.innerHTML = '';
+
+    const statusDiv = document.getElementById('gameInfoStatus');
+    if (statusDiv) {
+        if (currentTurn === myRole) {
+            statusDiv.innerHTML = `<span style="color: #00ffcc;">Đến lượt bạn (${myRole === 'W' ? 'Trắng' : 'Đen'})</span>`;
+        } else {
+            statusDiv.innerHTML = `<span style="color: rgba(255,255,255,0.5);">Đợi đối thủ đi quân...</span>`;
         }
-        conn = connection;
-        myRole = 'W';
-        currentTurn = 'W';
-        initChessBoardData();
-        setupConnectionDataChannel();
+    }
 
-        document.getElementById('chessWaitingScreen').style.display = 'none';
-        document.getElementById('chessGameArea').style.display = 'block';
-        renderChessBoard();
-        playSynthSound(600, 'triangle', 0.25);
-    });
+    // Vẽ 64 ô cờ (Nếu bạn chơi quân Đen, bàn cờ sẽ đảo ngược góc nhìn để dễ nhìn)
+    for (let i = 0; i < 64; i++) {
+        const index = myRole === 'B' ? 63 - i : i;
+        const row = Math.floor(index / 8);
+        const col = index % 8;
+
+        const square = document.createElement('div');
+        square.style.display = 'flex';
+        square.style.justifyContent = 'center';
+        square.style.alignItems = 'center';
+        square.style.fontSize = '32px';
+        square.style.cursor = 'pointer';
+        square.style.userSelect = 'none';
+        square.style.transition = 'all 0.2s';
+
+        // Màu nền bàn cờ Caro
+        const isLight = (row + col) % 2 === 0;
+        square.style.backgroundColor = isLight ? '#f0d9b5' : '#b58863';
+
+        // Đổ bóng hiển thị quân cờ màu tương ứng
+        const piece = boardState[index];
+        if (piece) {
+            square.innerText = pieceSymbols[piece] || '';
+            square.style.color = piece.startsWith('W') ? '#ffffff' : '#000000';
+            square.style.textShadow = piece.startsWith('W') ? '0 0 4px #000' : '0 0 4px #fff';
+        }
+
+        // Highlight ô đang được lựa chọn click
+        if (selectedSquare === index) {
+            square.style.backgroundColor = '#7b9c60';
+        } else if (selectedSquare !== null && isValidNormalMove(selectedSquare, index)) {
+            // Gợi ý chấm sáng các ô có thể đi hợp lệ
+            square.style.boxShadow = 'inset 0 0 0 4px #00ffcc';
+        }
+
+        // Đăng ký bộ lắng nghe sự kiện bấm ô cờ
+        square.addEventListener('click', () => handleSquareClick(index));
+        boardDiv.appendChild(square);
+    }
 }
 
-function setupConnectionDataChannel() {
-    conn.on('data', (data) => {
-        if (data.type === 'MOVE') {
-            boardState = data.board;
-            currentTurn = myRole; 
-            playSynthSound(480, 'triangle', 0.12);
-            renderChessBoard();
-        }
-    });
-
-    conn.on('close', () => {
-        alert("Đối thủ đã ngắt kết nối hoặc rời phòng cờ!");
-        resetChessUI();
-    });
-}
-
+// 7. HỆ THỐNG KẾT NỐI MẠNG P2P PEERJS
 function resetChessUI() {
-    if (conn) { conn.close(); conn = null; }
     document.getElementById('chessConnectMenu').style.display = 'block';
     document.getElementById('chessWaitingScreen').style.display = 'none';
     document.getElementById('chessGameArea').style.display = 'none';
 }
 
-function leaveChessRoom() {
-    resetChessUI();
-    if (peer) { peer.destroy(); peer = null; }
+function setupConnectionDataChannel() {
+    if (!conn) return;
+    conn.on('data', (data) => {
+        if (data.type === 'move') {
+            boardState = data.board;
+            currentTurn = data.nextTurn;
+            renderChessBoard();
+            if (typeof playSynthSound === 'function') playSynthSound(300, 'sine', 0.15);
+        }
+        else if (data.type === 'castle') {
+            // Đồng bộ nước đi nhập thành từ phía đối thủ gửi tới
+            boardState[data.kingTo] = boardState[data.kingFrom];
+            boardState[data.rookTo] = boardState[data.rookFrom];
+            boardState[data.kingFrom] = null;
+            boardState[data.rookFrom] = null;
+            
+            currentTurn = data.nextTurn;
+            renderChessBoard();
+            if (typeof playSynthSound === 'function') playSynthSound(523.25, 'sine', 0.2);
+        }
+    });
+    conn.on('close', () => {
+        alert("Đối thủ đã rời trận đấu!");
+        resetChessUI();
+    });
 }
 
-// SỰ KIỆN NÚT TẠO PHÒNG
-document.getElementById('btnCreateRoom').addEventListener('click', () => {
-    playSynthSound(300, 'triangle', 0.1);
-    if (typeof Peer === 'undefined') {
-        alert("Lỗi mạng: Trình duyệt không tải được thư viện PeerJS! Hãy tắt trình chặn quảng cáo rồi F5 chạy lại web nhé.");
-        return;
-    }
+function setupPeerEvents() {
+    peer.on('error', (err) => {
+        alert("Lỗi kết nối mạng: " + err.type);
+        resetChessUI();
+    });
+}
 
+// Hành động: Bấm nút Tạo Phòng
+document.getElementById('btnCreateRoom').addEventListener('click', () => {
     document.getElementById('chessConnectMenu').style.display = 'none';
     document.getElementById('chessWaitingScreen').style.display = 'block';
-    document.getElementById('waitingStatus').innerText = 'Đang đăng ký mã phòng với hệ thống vũ trụ...';
-
-    const roomID = '9A-' + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('waitingStatus').innerText = 'Đang xin mã phòng từ hệ thống...';
 
     try {
-        peer = new Peer(roomID);
+        peer = new Peer();
         setupPeerEvents();
-        
-        const timeoutCheck = setTimeout(() => {
-            if (!peer || !peer.id) {
-                document.getElementById('waitingStatus').innerHTML = '<span style="color:#ff007f">Máy chủ mạng đang nghẽn. Bạn hãy ấn Quay lại rồi thử bấm Tạo phòng lại nhé!</span>';
-            }
-        }, 10000);
 
         peer.on('open', (id) => {
-            clearTimeout(timeoutCheck);
-            document.getElementById('waitingStatus').innerText = 'Phòng đã tạo! Hãy gửi mã này cho bạn cùng chơi:';
+            document.getElementById('waitingStatus').innerText = 'Hãy gửi mã này cho bạn của bạn:';
             document.getElementById('shareCodeArea').style.display = 'block';
             document.getElementById('generatedRoomCode').innerText = id;
         });
-    } catch (err) {
-        document.getElementById('waitingStatus').innerText = 'Lỗi khởi tạo: ' + err.message;
+
+        peer.on('connection', (incomingConn) => {
+            conn = incomingConn;
+            myRole = 'W'; // Chủ phòng cầm quân Trắng
+            currentTurn = 'W';
+            initChessBoardData();
+            setupConnectionDataChannel();
+
+            document.getElementById('chessWaitingScreen').style.display = 'none';
+            document.getElementById('chessGameArea').style.display = 'block';
+            renderChessBoard();
+        });
+    } catch (e) {
+        alert("Không thể khởi tạo phòng: " + e.message);
+        resetChessUI();
     }
 });
 
-// SỰ KIỆN NÚT VÀO PHÒNG
+// Hành động: Bấm nút Vào Phòng
 document.getElementById('btnJoinRoom').addEventListener('click', () => {
     const code = document.getElementById('roomCodeInput').value.trim();
     if (!code) {
-        alert("Bạn ơi, hãy nhập mã phòng do bạn mình gửi trước nhé!");
-        return;
-    }
-    if (typeof Peer === 'undefined') {
-        alert("Lỗi mạng: Không tìm thấy thư viện kết nối cờ. Hãy kiểm tra lại mạng hoặc tắt Adblock nhé!");
+        alert("Vui lòng nhập mã phòng!");
         return;
     }
 
-    playSynthSound(300, 'triangle', 0.1);
     document.getElementById('chessConnectMenu').style.display = 'none';
     document.getElementById('chessWaitingScreen').style.display = 'block';
     document.getElementById('waitingStatus').innerText = 'Đang định vị tọa độ phòng: ' + code + '...';
     document.getElementById('shareCodeArea').style.display = 'none';
 
     try {
-        peer = new Peer(); 
+        peer = new Peer();
         setupPeerEvents();
-        
+
         peer.on('open', () => {
-            conn = peer.connect(code); 
+            conn = peer.connect(code);
 
             const connTimeout = setTimeout(() => {
                 if (!conn || !conn.open) {
-                    alert("Không thể kết nối! Vui lòng kiểm tra lại mã phòng hoặc bảo bạn mình giữ nguyên màn hình chờ nhé.");
+                    alert("Kết nối quá hạn! Vui lòng kiểm tra lại mã phòng.");
                     resetChessUI();
                 }
             }, 10000);
 
             conn.on('open', () => {
                 clearTimeout(connTimeout);
-                myRole = 'B';
-                currentTurn = 'W'; 
+                myRole = 'B'; // Người vào sau cầm quân Đen
+                currentTurn = 'W';
                 initChessBoardData();
                 setupConnectionDataChannel();
 
                 document.getElementById('chessWaitingScreen').style.display = 'none';
                 document.getElementById('chessGameArea').style.display = 'block';
                 renderChessBoard();
-                playSynthSound(600, 'triangle', 0.25);
             });
         });
     } catch (err) {
@@ -371,4 +427,10 @@ document.getElementById('btnJoinRoom').addEventListener('click', () => {
     }
 });
 
-console.log("Hệ thống Mini Game cờ vua luật quốc tế chuẩn chỉnh chống treo UI hoạt động ổn định!");
+function leaveChessRoom() {
+    if (conn) conn.close();
+    if (peer) peer.destroy();
+    resetChessUI();
+}
+
+console.log("Hệ thống Mini Game cờ vua luật quốc tế tích hợp tính năng Nhập Thành nâng cao hoạt động ổn định!");
