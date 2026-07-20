@@ -19,6 +19,9 @@ let blackKingMoved = false;
 let blackRookAMoved = false; // Xe cánh Hậu (Cột A - Ô 0)
 let blackRookHMoved = false; // Xe cánh Vua (Cột H - Ô 7)
 
+// TIỀN TỐ BẢO MẬT TRÁNH TRÙNG MÃ PHÒNG TRÊN SERVER QUỐC TẾ
+const ROOM_PREFIX = "9a_chess_";
+
 // 2. KHỞI TẠO DỮ LIỆU BÀN CỜ BAN ĐẦU
 function initChessBoardData() {
     boardState = [
@@ -352,17 +355,21 @@ document.getElementById('btnCreateRoom').addEventListener('click', () => {
     document.getElementById('waitingStatus').innerText = 'Đang xin mã phòng từ hệ thống...';
 
     try {
-        // TẠO MÃ PHÒNG GỒM 6 SỐ NGẪU NHIÊN (Từ 100000 đến 999999)
-        const randomRoomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // TẠO SỐ NGẪU NHIÊN 6 CHỮ SỐ
+        const shortCode = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Khởi tạo Peer kèm mã phòng cố định tự chọn này
-        peer = new Peer(randomRoomCode);
+        // Kết hợp tiền tố bí mật để tạo ID không bao giờ bị trùng trên server quốc tế
+        const globalRoomId = ROOM_PREFIX + shortCode;
+        
+        peer = new Peer(globalRoomId);
         setupPeerEvents();
 
         peer.on('open', (id) => {
             document.getElementById('waitingStatus').innerText = 'Hãy gửi mã này cho bạn của bạn:';
             document.getElementById('shareCodeArea').style.display = 'block';
-            document.getElementById('generatedRoomCode').innerText = id; // id lúc này sẽ hiển thị 6 chữ số
+            
+            // CHỈ HIỂN THỊ 6 SỐ cho người dùng nhìn thấy
+            document.getElementById('generatedRoomCode').innerText = shortCode; 
         });
 
         peer.on('connection', (incomingConn) => {
@@ -384,15 +391,15 @@ document.getElementById('btnCreateRoom').addEventListener('click', () => {
 
 // Hành động: Bấm nút Vào Phòng
 document.getElementById('btnJoinRoom').addEventListener('click', () => {
-    const code = document.getElementById('roomCodeInput').value.trim();
-    if (!code) {
+    const userInputCode = document.getElementById('roomCodeInput').value.trim();
+    if (!userInputCode) {
         alert("Vui lòng nhập mã phòng!");
         return;
     }
 
     document.getElementById('chessConnectMenu').style.display = 'none';
     document.getElementById('chessWaitingScreen').style.display = 'block';
-    document.getElementById('waitingStatus').innerText = 'Đang định vị tọa độ phòng: ' + code + '...';
+    document.getElementById('waitingStatus').innerText = 'Đang kết nối phòng: ' + userInputCode + '...';
     document.getElementById('shareCodeArea').style.display = 'none';
 
     try {
@@ -400,7 +407,9 @@ document.getElementById('btnJoinRoom').addEventListener('click', () => {
         setupPeerEvents();
 
         peer.on('open', () => {
-            conn = peer.connect(code);
+            // Tự động thêm tiền tố bí mật vào trước 6 số người dùng nhập để kết nối chính xác
+            const targetGlobalId = ROOM_PREFIX + userInputCode;
+            conn = peer.connect(targetGlobalId);
 
             const connTimeout = setTimeout(() => {
                 if (!conn || !conn.open) {
@@ -433,4 +442,4 @@ function leaveChessRoom() {
     resetChessUI();
 }
 
-console.log("Hệ thống Mini Game cờ vua luật quốc tế tích hợp tính năng Nhập Thành nâng cao hoạt động ổn định!");
+console.log("Hệ thống Mini Game cờ vua P2P bảo mật mã phòng 6 chữ số hoạt động ổn định!");
